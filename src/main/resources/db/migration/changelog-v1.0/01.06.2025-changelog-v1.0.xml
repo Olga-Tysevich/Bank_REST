@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <include file="01.06.2025-create-table-roles-v1.0.xml" relativeToChangelogFile="true"/>
+    <include file="01.06.2025-create-table-users-v1.0.xml" relativeToChangelogFile="true"/>
+    <include file="01.06.2025-create-table-users-roles-v1.0.xml" relativeToChangelogFile="true"/>
+    <include file="01.06.2025-create-table-refresh-tokens-v1.0.xml" relativeToChangelogFile="true"/>
+    <include file="01.06.2025-create-card-table-v1.0.xml" relativeToChangelogFile="true"/>
+    <include file="01.06.2025-create-transfer-table-v1.0.xml" relativeToChangelogFile="true"/>
+    <include file="01.06.2025-create-indexes-v1.0.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

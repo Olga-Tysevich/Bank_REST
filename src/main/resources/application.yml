@@ -1,8 +1,81 @@
-#
-# application.yml — главный конфигурационный файл Spring Boot.
+spring:
+  application:
+    name: bankrest
+    security:
+      jwt:
+        access-key:
+          secret: ${JWT_ACCESS_KEY_SECRET}
+          expiration-time: ${JWT_ACCESS_KEY_EXPIRATION_TIME}
+        refresh-key:
+          secret: ${JWT_REFRESH_KEY_SECRET}
+          expiration-time: ${JWT_REFRESH_KEY_EXPIRATION_TIME}
+    card:
+      balance:
+        min: ${MIN_CARD_BALANCE}
 
-Что нужно сделать:
-  - Указать настройки подключения к базе данных.
-  - Указать порт приложения.
-  - Настроить параметры безопасности и JWT.
-  - Включить Swagger UI.
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${BANK_REST_APPLICATION_HOST}:${BANK_REST_DB_PORT}/${BANK_REST_DB_NAME}
+    username: ${BANK_REST_DB_USER}
+    password: ${BANK_REST_DB_PASSWORD}
+  sql:
+    init:
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    generate-ddl: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        temp:
+          use_jdbc_metadata_defaults: false
+        format_sql: true
+  liquibase:
+    enabled: true
+    password: ${BANK_REST_DB_PASSWORD}
+    user: ${BANK_REST_DB_USER}
+    change-log: classpath:/db/migration/changelog-master.xml
+  data:
+    redis:
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
+      password: ${REDIS_PASSWORD}
+  app:
+    web:
+      allowedSources: ${BANK_REST_WEB_ALLOWED_SOURCES}
+      allowedMethods: ${BANK_REST_WEB_ALLOWED_METHODS}
+      allowedHeaders: ${BANK_REST_WEB_ALLOWED_HEADERS}
+      ignoredUrls: ${BANK_REST_WEB_IGNORED_URLS}
+
+logging:
+  level:
+    root: INFO
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+    by:
+      testtask: DEBUG
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  api-docs:
+    path: /v3/api-docs
+  show-actuator: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always

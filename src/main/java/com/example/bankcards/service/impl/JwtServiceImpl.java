@@ -1,0 +1,86 @@
+package com.example.bankcards.service.impl;
+
+import com.example.bankcards.dto.api.resp.LoggedUserDTO;
+import com.example.bankcards.entity.RefreshToken;
+import com.example.bankcards.entity.User;
+import com.example.bankcards.exception.InvalidRefreshTokenException;
+import com.example.bankcards.exception.UserNotFoundException;
+import com.example.bankcards.repository.RefreshTokenRepository;
+import com.example.bankcards.repository.UserRepository;
+import com.example.bankcards.service.JwtService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import static com.example.bankcards.util.Constants.TOKEN_CANNOT_BE_NULL_OR_EMPTY;
+
+
+/**
+ * Service class that provides implementation for generating and regenerating JWT tokens.
+ */
+@Service
+@RequiredArgsConstructor
+@Transactional(propagation = Propagation.REQUIRED)
+public class JwtServiceImpl implements JwtService {
+    /**
+     * RefreshTokenRepository bean.
+     *
+     * @see RefreshTokenRepository
+     */
+    private final RefreshTokenRepository refreshTokenRepository;
+    /**
+     * JwtProvider bean.
+     *
+     * @see JwtProvider
+     */
+    private final JwtProvider jwtProvider;
+    /**
+     * UserRepository bean.
+     *
+     * @see UserRepository
+     */
+    private final UserRepository userRepository;
+
+    @Override
+    public LoggedUserDTO generatePairOfTokens(User user) {
+        String accessToken = jwtProvider.generateAccessToken(user);
+        String refreshToken = jwtProvider.generateRefreshToken(user);
+        saveRefreshToken(user.getUsername(), refreshToken);
+        return LoggedUserDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .userId(user.getId())
+                .build();
+    }
+
+    @Override
+    public LoggedUserDTO regeneratePairOfTokens(@Valid @NotBlank(message = TOKEN_CANNOT_BE_NULL_OR_EMPTY)
+                                                String refreshToken) {
+        if (!jwtProvider.validateRefreshToken(refreshToken)) {
+            throw new InvalidRefreshTokenException();
+        }
+        String username = jwtProvider.getRefreshClaims(refreshToken).getSubject();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(UserNotFoundException::new);
+        return generatePairOfTokens(user);
+    }
+
+    /**
+     * Saves the refresh token for the given email.
+     *
+     * @param username The email of the user for whom the token is saved.
+     * @param token    The refresh token to be saved.
+     */
+    private void saveRefreshToken(@Valid @Email String username,
+                                  @Valid @NotBlank(message = TOKEN_CANNOT_BE_NULL_OR_EMPTY) String token) {
+        if (!userRepository.existsByUsername(username)) {
+            throw new UserNotFoundException();
+        }
+        refreshTokenRepository.save(new RefreshToken(username, token));
+    }
+
+}
