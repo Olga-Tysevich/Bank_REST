@@ -6,7 +6,7 @@
                             https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
 
 
-    <changeSet id="create-card-table" author="dev">
+    <changeSet id="create-card-table" author="Tysevich Olga">
 
         <createSequence sequenceName="card_id_seq" startValue="1" incrementBy="1"/>
 

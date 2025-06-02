@@ -5,7 +5,7 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
 
-    <changeSet id="create-transfer-table" author="dev">
+    <changeSet id="create-transfer-table" author="Tysevich Olga">
 
         <createSequence sequenceName="transfer_id_seq" startValue="1" incrementBy="1"/>
 

@@ -1,7 +1,7 @@
 package com.example.bankcards.controller;
 
-import com.example.bankcards.dto.api.req.UserLoginDTO;
-import com.example.bankcards.dto.api.resp.LoggedUserDTO;
+import com.example.bankcards.dto.api.req.UserLoginReqDTO;
+import com.example.bankcards.dto.api.resp.LoggedUserRespDTO;
 import com.example.bankcards.service.AuthService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,8 +40,8 @@ public class AuthController {
      * @return ResponseEntity containing access token and setting refresh token cookie
      */
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid UserLoginDTO req) {
-        LoggedUserDTO respBody = authService.loginUser(req);
+    public ResponseEntity<?> login(@RequestBody @Valid UserLoginReqDTO req) {
+        LoggedUserRespDTO respBody = authService.loginUser(req);
         ResponseCookie cookie = createRefreshTokenCookie(respBody.getRefreshToken());
 
         return ResponseEntity.ok()
@@ -81,7 +81,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No refresh token provided");
         }
 
-        LoggedUserDTO newTokens = authService.reLoginUser(refreshToken);
+        LoggedUserRespDTO newTokens = authService.reLoginUser(refreshToken);
         ResponseCookie cookie = createRefreshTokenCookie(newTokens.getRefreshToken());
 
         return ResponseEntity.ok()

@@ -4,10 +4,7 @@ import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.util.validators.MinBalance;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -62,5 +59,23 @@ public class Card {
 
     @Version
     private Long version;
+
+    public void addToHold(@NotNull(message = TRANSFER_AMOUNT_CANNOT_BE_NUL)
+            @DecimalMin(value = "0.00", message = TRANSFER_AMOUNT_BE_POSITIVE) BigDecimal amount)
+    {
+        if (balance.compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Insufficient available balance to hold funds.");
+        }
+        this.hold = this.hold.add(amount);
+    }
+
+    public void releaseFromHold(@NotNull(message = TRANSFER_AMOUNT_CANNOT_BE_NUL)
+                                @DecimalMin(value = "0.00", message = TRANSFER_AMOUNT_BE_POSITIVE) BigDecimal amount)
+    {
+        if (getHold().compareTo(amount) < 0) {
+            throw new IllegalArgumentException("Cannot release more than is held.");
+        }
+        this.hold = this.hold.subtract(amount);
+    }
 
 }

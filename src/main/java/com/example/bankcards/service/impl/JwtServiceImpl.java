@@ -1,6 +1,6 @@
 package com.example.bankcards.service.impl;
 
-import com.example.bankcards.dto.api.resp.LoggedUserDTO;
+import com.example.bankcards.dto.api.resp.LoggedUserRespDTO;
 import com.example.bankcards.entity.RefreshToken;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.exception.InvalidRefreshTokenException;
@@ -46,11 +46,11 @@ public class JwtServiceImpl implements JwtService {
     private final UserRepository userRepository;
 
     @Override
-    public LoggedUserDTO generatePairOfTokens(User user) {
+    public LoggedUserRespDTO generatePairOfTokens(User user) {
         String accessToken = jwtProvider.generateAccessToken(user);
         String refreshToken = jwtProvider.generateRefreshToken(user);
         saveRefreshToken(user.getUsername(), refreshToken);
-        return LoggedUserDTO.builder()
+        return LoggedUserRespDTO.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(user.getId())
@@ -58,7 +58,7 @@ public class JwtServiceImpl implements JwtService {
     }
 
     @Override
-    public LoggedUserDTO regeneratePairOfTokens(@Valid @NotBlank(message = TOKEN_CANNOT_BE_NULL_OR_EMPTY)
+    public LoggedUserRespDTO regeneratePairOfTokens(@Valid @NotBlank(message = TOKEN_CANNOT_BE_NULL_OR_EMPTY)
                                                 String refreshToken) {
         if (!jwtProvider.validateRefreshToken(refreshToken)) {
             throw new InvalidRefreshTokenException();

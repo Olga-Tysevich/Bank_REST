@@ -1,6 +1,6 @@
 package com.example.bankcards.config.redis;
 
-import com.example.bankcards.dto.redis.TransferMessage;
+import com.example.bankcards.dto.redis.TransferMessageDTO;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -23,7 +23,7 @@ import java.util.Objects;
 /**
  * RedisConfig is a configuration class that sets up Redis support for caching and message serialization in the application.
  * It configures the `RedisTemplate` and `RedisCacheManager` beans used to interact with Redis, with custom serialization
- * of {@link TransferMessage} objects to JSON format.
+ * of {@link TransferMessageDTO} objects to JSON format.
  * It also configures the cache manager with default serialization settings.
  */
 @EnableCaching
@@ -31,15 +31,15 @@ import java.util.Objects;
 public class RedisConfig {
 
     /**
-     * Configures a RedisTemplate for working with Redis and serializing {@link TransferMessage} objects.
+     * Configures a RedisTemplate for working with Redis and serializing {@link TransferMessageDTO} objects.
      * This template is used to interact with Redis and serialize the objects as JSON using a custom ObjectMapper.
      *
      * @param redisConnectionFactory the factory used to create connections to the Redis server.
      * @return a configured RedisTemplate with custom serializers.
      */
     @Bean
-    public RedisTemplate<String, TransferMessage> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
-        RedisTemplate<String, TransferMessage> template = new RedisTemplate<>();
+    public RedisTemplate<String, TransferMessageDTO> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, TransferMessageDTO> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory);
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -60,7 +60,7 @@ public class RedisConfig {
                             return null;
                         }
                         try {
-                            return objectMapper.readValue(bytes, TransferMessage.class);
+                            return objectMapper.readValue(bytes, TransferMessageDTO.class);
                         } catch (Exception ex) {
                             throw new SerializationException("Could not read JSON", ex);
                         }

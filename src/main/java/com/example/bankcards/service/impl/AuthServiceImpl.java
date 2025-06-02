@@ -1,7 +1,7 @@
 package com.example.bankcards.service.impl;
 
-import com.example.bankcards.dto.api.req.UserLoginDTO;
-import com.example.bankcards.dto.api.resp.LoggedUserDTO;
+import com.example.bankcards.dto.api.req.UserLoginReqDTO;
+import com.example.bankcards.dto.api.resp.LoggedUserRespDTO;
 import com.example.bankcards.entity.User;
 import com.example.bankcards.service.AuthService;
 import com.example.bankcards.service.JwtService;
@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
 
     @Override
-    public LoggedUserDTO loginUser(UserLoginDTO req) {
+    public LoggedUserRespDTO loginUser(UserLoginReqDTO req) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(req.getUsername(), req.getPassword())
         );
@@ -51,7 +51,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
        @Override
-    public LoggedUserDTO reLoginUser(String refreshToken) {
+    public LoggedUserRespDTO reLoginUser(String refreshToken) {
         return jwtService.regeneratePairOfTokens(refreshToken);
     }
 
