@@ -22,7 +22,7 @@ import static com.example.bankcards.util.Constants.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TransferMessage implements Serializable {
+public class TransferMessageDTO implements Serializable {
 
     @NotNull(message = ID_CANNOT_BE_NULL)
     private Long id;

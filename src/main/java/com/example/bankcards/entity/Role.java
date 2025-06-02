@@ -21,7 +21,7 @@ import static com.example.bankcards.util.Constants.ROLE_CANNOT_BE_NULL;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "roles")
+@Table(name = "bank_rest_roles")
 @Entity
 public class Role implements GrantedAuthority, Serializable {
     @Id

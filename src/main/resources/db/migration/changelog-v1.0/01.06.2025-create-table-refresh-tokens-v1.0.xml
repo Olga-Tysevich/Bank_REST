@@ -4,7 +4,8 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
-    <changeSet id="create_table_refresh_tokens-table" author="your_name">
+
+    <changeSet id="create_table_refresh_tokens-table" author="Tysevich Olga">
         <createTable tableName="refresh_tokens">
             <column name="username" type="VARCHAR(255)">
                 <constraints primaryKey="true" nullable="false"/>
@@ -14,4 +15,5 @@
             </column>
         </createTable>
     </changeSet>
+
 </databaseChangeLog>

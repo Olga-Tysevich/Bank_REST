@@ -4,29 +4,30 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
-    <changeSet id="create-indexes" author="dev">
+
+    <changeSet id="create-indexes" author="Tysevich Olga">
         <createIndex indexName="idx_users_username" tableName="users">
             <column name="username"/>
         </createIndex>
 
-        <createIndex indexName="idx_card_owner_id" tableName="card">
+        <createIndex indexName="idx_card_owner_id" tableName="cards">
             <column name="owner_id"/>
         </createIndex>
-        <createIndex indexName="idx_card_number" tableName="card">
+        <createIndex indexName="idx_card_number" tableName="cards">
             <column name="number"/>
         </createIndex>
 
-        <createIndex indexName="idx_card_status" tableName="card">
+        <createIndex indexName="idx_card_status" tableName="cards">
             <column name="status"/>
         </createIndex>
 
-        <createIndex indexName="idx_transfer_from_card" tableName="transfer">
+        <createIndex indexName="idx_transfer_from_card" tableName="transfers">
             <column name="from_card_id"/>
         </createIndex>
-        <createIndex indexName="idx_transfer_to_card" tableName="transfer">
+        <createIndex indexName="idx_transfer_to_card" tableName="transfers">
             <column name="to_card_id"/>
         </createIndex>
-        <createIndex indexName="idx_transfer_created_at" tableName="transfer">
+        <createIndex indexName="idx_transfer_created_at" tableName="transfers">
             <column name="created_at"/>
         </createIndex>
 

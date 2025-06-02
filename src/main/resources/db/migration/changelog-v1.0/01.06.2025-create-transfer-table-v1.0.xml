@@ -5,11 +5,11 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
 
-    <changeSet id="create-transfer-table" author="dev">
+    <changeSet id="create-transfer-table" author="Tysevich Olga">
 
         <createSequence sequenceName="transfer_id_seq" startValue="1" incrementBy="1"/>
 
-        <createTable tableName="transfer">
+        <createTable tableName="transfers">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -33,11 +33,11 @@
         </createTable>
 
         <addForeignKeyConstraint constraintName="fk_transfer_from_card"
-                                 baseTableName="transfer" baseColumnNames="from_card_id"
-                                 referencedTableName="card" referencedColumnNames="id"/>
+                                 baseTableName="transfers" baseColumnNames="from_card_id"
+                                 referencedTableName="cards" referencedColumnNames="id"/>
         <addForeignKeyConstraint constraintName="fk_transfer_to_card"
-                                 baseTableName="transfer" baseColumnNames="to_card_id"
-                                 referencedTableName="card" referencedColumnNames="id"/>
+                                 baseTableName="transfers" baseColumnNames="to_card_id"
+                                 referencedTableName="cards" referencedColumnNames="id"/>
 
     </changeSet>
 

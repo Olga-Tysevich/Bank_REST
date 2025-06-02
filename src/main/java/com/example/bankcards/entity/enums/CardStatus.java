@@ -6,5 +6,15 @@ package com.example.bankcards.entity.enums;
 public enum CardStatus {
     ACTIVE,
     BLOCKED,
-    EXPIRED
+    EXPIRED;
+
+    /**
+     * Checking card status
+     * @param cardStatus current card status
+     * @return false if status is ACTIVE
+     */
+    public static boolean isLockedForTransfer(CardStatus cardStatus) {
+        return cardStatus == CardStatus.EXPIRED || cardStatus == CardStatus.BLOCKED;
+    }
+
 }

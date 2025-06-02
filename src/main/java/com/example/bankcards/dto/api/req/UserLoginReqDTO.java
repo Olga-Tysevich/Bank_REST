@@ -17,7 +17,7 @@ import static com.example.bankcards.util.Constants.USERNAME_CANNOT_BE_NULL_OR_EM
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UserLoginDTO {
+public class UserLoginReqDTO {
 
     @NotBlank(message = USERNAME_CANNOT_BE_NULL_OR_EMPTY)
     private String username;

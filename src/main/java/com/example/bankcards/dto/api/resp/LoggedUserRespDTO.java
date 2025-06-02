@@ -15,7 +15,7 @@ import static com.example.bankcards.util.Constants.TOKEN_TYPE;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class LoggedUserDTO {
+public class LoggedUserRespDTO {
 
     @Builder.Default
     private String type = TOKEN_TYPE;

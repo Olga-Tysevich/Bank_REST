@@ -12,9 +12,11 @@ public interface Constants {
 
     String CARD_NUMBER_REGEX = "^(2200|2201|2202|4[0-9]{12,15}|5[1-5][0-9]{14}|3[47][0-9]{13})[0-9]{13,16}$";
     String CARD_NUMBER_MASK_REGEX = "^(\\d{4})(\\d{4})(\\d{4})(\\d{4})$";
+    String ENROLMENT_TRANSFER_DETAILS = "from card id: %d, Reason: card is blocked for transfers.";
 
     String THE_ROLE_SET_CANNOT_BE_EMPTY = "The role set cannot be empty! You must select at least one user role!";
     String ID_CANNOT_BE_NULL = "ID cannot be null!";
+    String SENDER_DATA_CANNOT_BE_NULL_OR_EMPTY = "ID cannot be null or empty!";
     String ROLE_CANNOT_BE_NULL = "Role cannot be null!";
     String EXPIRATION_DATE_CANNOT_BE_NULL = "End date cannot be null.";
     String USER_CANNOT_BE_NULL = "User must be specified";
@@ -41,7 +43,8 @@ public interface Constants {
     String TRANSFER_DATE_CANNOT_BE_NUL = "Transfer date cannot be null";
     String TRANSFER_DATE_MUST_BE_IN_PAST = "Transfer date must be in the past";
     String TRANSFER_CONFIRM_DATE_MUST_BE_IN_PAST = "Transfer confirm date must be in the past";
-    String TRANSFER_STATUS_CANNOT_BE_NUL = "Transfer cannot be null";
+    String TRANSFER_STATUS_CANNOT_BE_NUL = "Transfer status cannot be null";
+    String TRANSFER_AMOUNT_CANNOT_BE_NUL = "Transfer amount cannot be null";
     String TRANSFER_AMOUNT_BE_POSITIVE = "Hold balance must be positive!";
     String VERSION_CANNOT_BE_NULL = "Version must be specified";
 

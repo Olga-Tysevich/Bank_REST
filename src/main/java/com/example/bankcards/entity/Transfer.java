@@ -23,7 +23,7 @@ import static com.example.bankcards.util.Constants.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "transfer")
+@Table(name = "transfers")
 public class Transfer {
 
     @Id

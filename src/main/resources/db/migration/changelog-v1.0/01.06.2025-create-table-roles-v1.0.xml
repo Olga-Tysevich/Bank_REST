@@ -4,11 +4,12 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                             https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
-    <changeSet id="create_roles_table" author="your_name">
+
+    <changeSet id="create_roles_table" author="Tysevich Olga">
 
         <createSequence sequenceName="role_id_seq" startValue="1" incrementBy="1"/>
 
-        <createTable tableName="roles">
+        <createTable tableName="bank_rest_roles">
             <column name="id" type="INTEGER">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -18,4 +19,5 @@
         </createTable>
 
     </changeSet>
+
 </databaseChangeLog>
