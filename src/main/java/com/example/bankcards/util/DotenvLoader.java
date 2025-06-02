@@ -74,6 +74,9 @@ public class DotenvLoader {
         System.setProperty("JWT_REFRESH_KEY_EXPIRATION_TIME", Objects.requireNonNull(dotenv.get("JWT_REFRESH_KEY_EXPIRATION_TIME")));
 
         //Application
+        System.setProperty("CRYPTO_TYPE", Objects.requireNonNull(dotenv.get("CRYPTO_TYPE")));
+        System.setProperty("SECRET_KEY", Objects.requireNonNull(dotenv.get("SECRET_KEY")));
+
         System.setProperty("MIN_CARD_BALANCE", Objects.requireNonNull(dotenv.get("MIN_CARD_BALANCE")));
 
         System.setProperty("BANK_REST_WEB_ALLOWED_SOURCES", Objects.requireNonNull(dotenv.get("BANK_REST_WEB_ALLOWED_SOURCES")));

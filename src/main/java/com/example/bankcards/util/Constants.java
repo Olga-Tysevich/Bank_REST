@@ -11,7 +11,7 @@ public interface Constants {
     String ROLE_CLAIM = "role";
 
     String CARD_NUMBER_REGEX = "^(2200|2201|2202|4[0-9]{12,15}|5[1-5][0-9]{14}|3[47][0-9]{13})[0-9]{13,16}$";
-    String CARD_NUMBER_MASK_REGEX = "^(\\d{4})(\\d{4})(\\d{4})(\\d{4})$";
+    int CARD_NUMBER_DIGIT_FOR_DISPLAY = 4;
     String ENROLMENT_TRANSFER_DETAILS = "from card id: %d, Reason: card is blocked for transfers.";
 
     String THE_ROLE_SET_CANNOT_BE_EMPTY = "The role set cannot be empty! You must select at least one user role!";

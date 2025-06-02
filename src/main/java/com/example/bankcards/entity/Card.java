@@ -1,6 +1,7 @@
 package com.example.bankcards.entity;
 
 import com.example.bankcards.entity.enums.CardStatus;
+import com.example.bankcards.entity.listeners.CardListener;
 import com.example.bankcards.util.validators.MinBalance;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -20,6 +21,7 @@ import static com.example.bankcards.util.Constants.*;
 @Builder
 @Entity
 @Table(name = "cards")
+@EntityListeners(CardListener.class)
 public class Card {
 
     @Id
