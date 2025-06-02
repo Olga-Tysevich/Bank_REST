@@ -14,4 +14,7 @@ public class AppConf {
     @Value("${spring.application.card.transfer.permissions.yourselfOnly:false}")
     boolean transferAllowedYourselfOnly;
 
+    @Value("${spring.application.card.balance.min:0.01}")
+    private String minBalanceStr;
+
 }

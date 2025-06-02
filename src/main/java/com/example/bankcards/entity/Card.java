@@ -19,7 +19,7 @@ import static com.example.bankcards.util.Constants.*;
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "card")
+@Table(name = "cards")
 public class Card {
 
     @Id

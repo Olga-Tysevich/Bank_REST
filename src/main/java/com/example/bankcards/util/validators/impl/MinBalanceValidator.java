@@ -1,9 +1,11 @@
 package com.example.bankcards.util.validators.impl;
 
+import com.example.bankcards.config.app.AppConf;
 import com.example.bankcards.util.validators.MinBalance;
 import jakarta.annotation.PostConstruct;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,16 +31,14 @@ import java.math.BigDecimal;
  */
 
 @Component
+@RequiredArgsConstructor
 public class MinBalanceValidator implements ConstraintValidator<MinBalance, BigDecimal> {
-
-    @Value("${spring.application.card.balance.min:0.01}")
-    private String minBalanceStr;
-
+    private final AppConf appConf;
     private BigDecimal minBalance;
 
     @PostConstruct
     public void init() {
-        minBalance = new BigDecimal(minBalanceStr);
+        minBalance = new BigDecimal(appConf.getMinBalanceStr());
     }
 
     @Override

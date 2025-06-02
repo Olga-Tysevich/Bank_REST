@@ -10,7 +10,7 @@
 
         <createSequence sequenceName="card_id_seq" startValue="1" incrementBy="1"/>
 
-        <createTable tableName="card">
+        <createTable tableName="cards">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -38,7 +38,7 @@
         </createTable>
 
         <addForeignKeyConstraint constraintName="fk_card_user"
-                                 baseTableName="card" baseColumnNames="owner_id"
+                                 baseTableName="cards" baseColumnNames="owner_id"
                                  referencedTableName="users" referencedColumnNames="id"/>
     </changeSet>
 
