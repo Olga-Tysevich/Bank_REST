@@ -12,7 +12,8 @@ spring:
     card:
       balance:
         min: ${MIN_CARD_BALANCE}
-
+  profiles:
+    active: dev
 
   datasource:
     driver-class-name: org.postgresql.Driver

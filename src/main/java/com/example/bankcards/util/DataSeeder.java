@@ -8,6 +8,7 @@ import com.example.bankcards.repository.*;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
@@ -23,6 +24,7 @@ import java.util.*;
 @Slf4j
 @Component
 @RequiredArgsConstructor
+@Profile("dev")
 public class DataSeeder {
 
     private final UserRepository userRepository;
@@ -40,6 +42,8 @@ public class DataSeeder {
      */
     @PostConstruct
     public void seedData() {
+
+
         if (userRepository.count() > 1) return;
         Role userRole = roleRepository.getByRole(RoleEnum.ROLE_USER)
                 .orElseGet(() -> roleRepository.save(Role.builder().role(RoleEnum.ROLE_USER).build()));
