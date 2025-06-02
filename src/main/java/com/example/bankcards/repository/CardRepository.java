@@ -47,4 +47,8 @@ public interface CardRepository extends JpaRepository<Card, Long> {
             "FROM Card c WHERE c.id = :cardId AND (c.status = 'BLOCKED' OR c.status = 'EXPIRED')")
     boolean isBlockedOrExpired(@NotNull @Param("cardId") Long cardId);
 
+
+    @Query("SELECT c.id FROM Card c WHERE c.number = :encryptedCardNumber")
+    Optional<Long> findIdByEncryptedCardNumber(@Param("encryptedCardNumber") String encryptedCardNumber);
+
 }

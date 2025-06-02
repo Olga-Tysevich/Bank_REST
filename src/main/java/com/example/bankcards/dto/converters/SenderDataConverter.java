@@ -1,4 +1,4 @@
-package com.example.bankcards.dto.mappers;
+package com.example.bankcards.dto.converters;
 
 import com.example.bankcards.entity.enums.SourceOfFunds;
 import com.fasterxml.jackson.core.type.TypeReference;

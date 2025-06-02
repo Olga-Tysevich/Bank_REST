@@ -9,6 +9,9 @@ spring:
         refresh-key:
           secret: ${JWT_REFRESH_KEY_SECRET}
           expiration-time: ${JWT_REFRESH_KEY_EXPIRATION_TIME}
+      crypto:
+        type: ${CRYPTO_TYPE}
+        key: ${SECRET_KEY}
     card:
       balance:
         min: ${MIN_CARD_BALANCE}

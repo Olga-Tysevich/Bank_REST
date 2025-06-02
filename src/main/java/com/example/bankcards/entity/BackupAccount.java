@@ -1,6 +1,6 @@
 package com.example.bankcards.entity;
 
-import com.example.bankcards.dto.mappers.SenderDataConverter;
+import com.example.bankcards.dto.converters.SenderDataConverter;
 import com.example.bankcards.entity.enums.SourceOfFunds;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;

@@ -17,6 +17,7 @@ import com.example.bankcards.exception.ProhibitedException;
 import com.example.bankcards.repository.BackupAccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.TransferRepository;
+import com.example.bankcards.service.EncryptionService;
 import com.example.bankcards.service.TransferService;
 import com.example.bankcards.util.PrincipalExtractor;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +86,12 @@ public class TransferServiceImpl implements TransferService {
      * @see TransferMapper
      */
     private final TransferMapper transferMapper;
+    /**
+     * The EncryptionService bean
+     *
+     * @see EncryptionService
+     */
+    private final EncryptionService encryptionService;
 
     /**
      * Creates a new transfer request.
@@ -102,8 +109,14 @@ public class TransferServiceImpl implements TransferService {
             throw new PreAuthenticatedCredentialsNotFoundException("Unauthorized access");
         }
 
-        Long fromCardId = transferReqDTO.getFromCardId();
-        Long toCardId = transferReqDTO.getToCardId();
+        String fromCardNumber = transferReqDTO.getFromCardNumber().encrypted();
+        String toCardNumber = transferReqDTO.getToCardNumber().encrypted();
+
+        Long fromCardId = Objects.requireNonNullElseGet(transferReqDTO.getFromCardId(),
+                () -> cardRepository.findIdByEncryptedCardNumber(fromCardNumber).orElseThrow());
+
+        Long toCardId = Objects.requireNonNullElseGet(transferReqDTO.getToCardId(),
+                () -> cardRepository.findIdByEncryptedCardNumber(toCardNumber).orElseThrow());;
 
         Long currentUserId = currentUser.getId();
         Long fromCardOwnerId = cardRepository.getOwnerIdById(fromCardId).orElseThrow();
