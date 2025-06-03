@@ -1,6 +1,7 @@
 package com.example.bankcards.events;
 
 
+import com.example.bankcards.dto.redis.CardBlockRequestCreatedMessageDTO;
 import com.example.bankcards.dto.redis.TransferMessageDTO;
 
 /**
@@ -35,6 +36,19 @@ public abstract class Events {
      * @see TransferMessageDTO
      */
     public record TransferConfirmed(TransferMessageDTO transferDTO) {
+    }
+
+    /**
+     * Domain event representing the creation of a card block request.
+     * <p>
+     * This event wraps a {@link CardBlockRequestCreatedMessageDTO} object
+     * and is typically published when a new card block request is initiated.
+     * </p>
+     *
+     * @param cardBlockRequestDTO the DTO containing details of the card block request
+     */
+    public record CardBlockRequestCreated(CardBlockRequestCreatedMessageDTO cardBlockRequestDTO) {
+
     }
 
 }

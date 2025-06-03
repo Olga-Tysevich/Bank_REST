@@ -14,24 +14,27 @@
 4. **Валидация токенов** на каждом запросе
 5. **Денежные переводы между картами с двухэтапной верификацией** 
 6. **Шифрование конфиденциальных данных (номера карт)** 
+7. **Обработка запросов блокировки карты пользователя** 
 
 ---
 
 #### Ключевые компоненты
-| Компонент                    | Назначение                                           |
-|------------------------------|------------------------------------------------------|
-| **`AuthService`**            | Интерфейс для входа и обновления токенов             |
-| **`CardService`**            | Интерфейс управления сущностью Card                  |
-| **`EncryptionService`**      | Интерфейс управления шифрованием                     |
-| **`JwtService`**             | Интерфейс генерации/регенерации JWT-токенов          |
-| **`TransferService`**        | Интерфейс управления сущностью Transfer              |
-| **`AuthServiceImpl`**        | Реализация аутентификации через Spring Security      |
-| **`CardServiceImpl`**        | Реализация управления сущностью Card                 |
-| **`EncryptionServiceImpl`**  | Реализация управления шифрованием                    |
-| **`JwtServiceImpl`**         | Логика работы с токенами и их сохранения в БД        |
-| **`JwtProvider`**            | Ядро для создания/проверки токенов (использует jjwt) |
-| **`TransferServiceImpl`**    | Реализация управления сущностью Transfer             |
-| **`UserDetailsServiceImpl`** | Загрузка пользовательских данных для Spring Security |
+| Компонент                          | Назначение                                           |
+|------------------------------------|------------------------------------------------------|
+| **`AuthService`**                  | Интерфейс для входа и обновления токенов             |
+| **`CardService`**                  | Интерфейс управления сущностью Card                  |
+| **`EncryptionService`**            | Интерфейс управления шифрованием                     |
+| **`JwtService`**                   | Интерфейс генерации/регенерации JWT-токенов          |
+| **`TransferService`**              | Интерфейс управления сущностью Transfer              |
+| **`CardBlockRequestService`**      | Интерфейс управления сущностью CardBlockRequest      |
+| **`AuthServiceImpl`**              | Реализация аутентификации через Spring Security      |
+| **`CardServiceImpl`**              | Реализация управления сущностью Card                 |
+| **`EncryptionServiceImpl`**        | Реализация управления шифрованием                    |
+| **`JwtServiceImpl`**               | Логика работы с токенами и их сохранения в БД        |
+| **`JwtProvider`**                  | Ядро для создания/проверки токенов (использует jjwt) |
+| **`TransferServiceImpl`**          | Реализация управления сущностью Transfer             |
+| **`UserDetailsServiceImpl`**       | Загрузка пользовательских данных для Spring Security |
+| **`CardBlockRequestServiceImpl`**  | Реализация управления сущностью CardBlockRequest     |
 
 ---
 
@@ -94,6 +97,55 @@ flowchart LR
     E -->|AES + Base64| F[Исходные данные]
 ```
 
+**6. Запрос блокировки карты:**
+```mermaid
+sequenceDiagram
+    Пользователь->>CardBlockRequestServiceImpl: Запрос блокировки карты
+    CardBlockRequestServiceImpl->>PrincipalExtractor: Получение текущего пользователя
+    CardBlockRequestServiceImpl->>CardRepository: Получение карты
+    alt Пользователь ≠ Владелец карты
+    CardBlockRequestServiceImpl-->>Пользователь: Ошибка ProhibitedException
+    else
+    CardBlockRequestServiceImpl->>CardBlockRequestRepository: Сохранение запроса
+    CardBlockRequestServiceImpl->>CardService: Обновление статуса карты (BLOCKED)
+    CardBlockRequestServiceImpl->>ApplicationEventPublisher: Публикация события (CardBlockRequestCreatedMessageDTO)
+    ApplicationEventPublisher-->>CardBlockRequestServiceImpl: Подтверждение
+    CardBlockRequestServiceImpl-->>Пользователь: ID созданного запроса
+    end
+```
+
+
+**7. Назначение администратора на заявку блокировки (в данном случае просто реализация для упрощения):**
+```mermaid
+sequenceDiagram
+    CardBlockRequestQueueProcessor->>CardBlockRequestServiceImpl: assignAdministrator()
+    CardBlockRequestServiceImpl->>CardBlockRequestRepository: Поиск заявки по ID
+    alt Заявка уже подтверждена или администратор назначен
+        CardBlockRequestServiceImpl-->>System: Исключение IllegalStateException
+    else
+        CardBlockRequestServiceImpl->>UserRepository: Поиск случайного администратора
+        UserRepository-->>CardBlockRequestServiceImpl: Admin
+        CardBlockRequestServiceImpl->>CardBlockRequestRepository: Обновление заявки с назначенным администратором
+    end
+```
+
+**8. 8. Взаимодействие Redis очередей (на примере заявки на блокировку карты):**
+```mermaid
+flowchart TD
+    A[CardBlockRequestServiceImpl] -->|publishEvent| B[CardBlockRequestCreatedMessageDTO]
+    B --> C[CardBlockRequestEventListener]
+    C -->|leftPush| D[Redis queue: cardBlockRequestCreated]
+    
+    subgraph Processor
+        E[CardBlockRequestQueueProcessor] -->|rightPopAndLeftPush| F[:processing queue]
+        F -->|assignAdministrator| G[CardBlockRequestServiceImpl]
+        G --> H[CardBlockRequestRepository: Save]
+        G -->|remove from processing queue| F
+    end
+
+    style Processor fill:#f0f0f0,stroke:#bbb,stroke-width:1px
+```
+
 ---
 
 #### Особенности безопасности
@@ -113,6 +165,7 @@ flowchart LR
     <li>Блокировке карты получателя</li>
   </ul>
 - Резервные счета для временного хранения средств при блокировках
+- Возможность пользователя запросить блокировку карты
 
 ---
 
