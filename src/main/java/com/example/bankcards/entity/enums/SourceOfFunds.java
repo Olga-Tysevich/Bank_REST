@@ -1,16 +1,19 @@
 package com.example.bankcards.entity.enums;
 
 import lombok.Getter;
+
+import java.util.List;
+
 /**
  * Enum representing different sources of funds for a transfer. This enum is primarily used for generating random
  * transfers in special cases such as testing, simulations, or handling edge-case scenarios in financial transactions.
  * It defines a set of predefined categories for the source of funds, which may include bank cards, cash contributions
  * from organizations or individuals, and other related sources.
- *
+ * <p>
  * Each source type can have its own set of associated sender data, represented by the nested {@link SenderDataKey} enum.
  * This ensures that the correct set of parameters, such as personal or organizational information, is expected
  * for each transfer type.
- *
+ * <p>
  * The {@link SourceOfFunds} enum helps in the systematic generation of expected transfer data, especially useful in
  * cases where random or test transfers need to be created with specific sender attributes.
  *
@@ -89,9 +92,9 @@ public enum SourceOfFunds {
         PHONE,
 
         /**
-         * The name of the organization (if applicable).
+         * The short name of the organization (if applicable).
          */
-        ORGANIZATION_NAME,
+        ORGANIZATION_SHORT_NAME,
 
         /**
          * Tax Identification Number (INN) of the organization (if applicable).
@@ -107,5 +110,29 @@ public enum SourceOfFunds {
          * Additional notes regarding the sender or the transfer.
          */
         NOTE;
+
+        public static List<SenderDataKey> mandatoryForIndividual() {
+            return List.of(
+                    SourceOfFunds.SenderDataKey.FULL_NAME,
+                    SourceOfFunds.SenderDataKey.DOCUMENT_TYPE,
+                    SourceOfFunds.SenderDataKey.DOCUMENT_NUMBER,
+                    SourceOfFunds.SenderDataKey.DOCUMENT_ISSUED_BY,
+                    SourceOfFunds.SenderDataKey.PHONE,
+                    SourceOfFunds.SenderDataKey.PAYMENT_PURPOSE
+            );
+        }
+
+        public static List<SenderDataKey> mandatoryForCompany() {
+            return List.of(
+                    SourceOfFunds.SenderDataKey.ORGANIZATION_INN,
+                    SourceOfFunds.SenderDataKey.FULL_NAME,
+                    SourceOfFunds.SenderDataKey.DOCUMENT_TYPE,
+                    SourceOfFunds.SenderDataKey.DOCUMENT_NUMBER,
+                    SourceOfFunds.SenderDataKey.DOCUMENT_ISSUED_BY,
+                    SourceOfFunds.SenderDataKey.ADDRESS,
+                    SourceOfFunds.SenderDataKey.PHONE,
+                    SourceOfFunds.SenderDataKey.PAYMENT_PURPOSE
+            );
+        }
     }
 }

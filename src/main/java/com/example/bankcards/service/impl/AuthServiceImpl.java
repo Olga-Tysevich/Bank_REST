@@ -39,6 +39,13 @@ public class AuthServiceImpl implements AuthService {
      */
     private final JwtService jwtService;
 
+    /**
+     * Authenticates the user based on the provided credentials and generates a pair of JWT tokens (access and refresh tokens).
+     *
+     * @param req the request object containing the user's login details, such as username and password.
+     * @return {@link LoggedUserRespDTO} containing the generated JWT tokens (access and refresh tokens) for the logged-in user.
+     * @throws org.springframework.security.authentication.BadCredentialsException if authentication fails.
+     */
     @Override
     public LoggedUserRespDTO loginUser(UserLoginReqDTO req) {
         authenticationManager.authenticate(
@@ -50,7 +57,14 @@ public class AuthServiceImpl implements AuthService {
         return jwtService.generatePairOfTokens(user);
     }
 
-       @Override
+    /**
+     * Regenerates a pair of JWT tokens (access and refresh tokens) using the provided refresh token.
+     *
+     * @param refreshToken the refresh token used to regenerate the access and refresh tokens.
+     * @return {@link LoggedUserRespDTO} containing the new pair of JWT tokens.
+     * @throws IllegalArgumentException if the refresh token is invalid or expired.
+     */
+    @Override
     public LoggedUserRespDTO reLoginUser(String refreshToken) {
         return jwtService.regeneratePairOfTokens(refreshToken);
     }

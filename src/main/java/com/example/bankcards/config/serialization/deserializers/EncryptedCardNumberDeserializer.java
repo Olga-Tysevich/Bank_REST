@@ -1,6 +1,7 @@
 package com.example.bankcards.config.serialization.deserializers;
 
 import com.example.bankcards.dto.api.crypto.EncryptedCardNumber;
+import com.example.bankcards.entity.enums.CardType;
 import com.example.bankcards.service.EncryptionService;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -11,7 +12,7 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-import static com.example.bankcards.util.Constants.CARD_NUMBER_REGEX;
+import static com.example.bankcards.entity.enums.CardType.CARD_NUMBER_REGEX;
 
 /**
  * Custom Jackson deserializer for {@link EncryptedCardNumber}.
@@ -63,7 +64,7 @@ public class EncryptedCardNumberDeserializer extends StdDeserializer<EncryptedCa
             throw new InvalidFormatException(p, "Invalid card number format", plainCardNumber, EncryptedCardNumber.class);
         }
 
-        String cardMask = EncryptedCardNumber.generateCardMask(plainCardNumber);
+        String cardMask = CardType.generateCardMask(plainCardNumber);
 
         String encrypted = encryptionService.encrypt(plainCardNumber);
 

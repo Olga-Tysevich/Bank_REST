@@ -2,6 +2,7 @@ package com.example.bankcards.util;
 
 import com.example.bankcards.entity.*;
 import com.example.bankcards.entity.enums.CardStatus;
+import com.example.bankcards.entity.enums.CardType;
 import com.example.bankcards.entity.enums.RoleEnum;
 import com.example.bankcards.entity.enums.TransferStatus;
 import com.example.bankcards.repository.*;
@@ -87,13 +88,18 @@ public class DataSeeder {
         for (User user : users) {
             int cardsCount = random.nextInt(6) + 1;
             for (int j = 0; j < cardsCount; j++) {
+                String cardNumber = generateCardNumber();
+                CardType type = determineCardType(cardNumber);
+
                 Card card = Card.builder()
-                        .number(generateCardNumber())
+                        .number(cardNumber)
+                        .type(type)
                         .expiration(LocalDate.now().plusYears(3))
                         .status(CardStatus.ACTIVE)
                         .balance(BigDecimal.valueOf(random.nextInt(50000) + 1000))
                         .hold(BigDecimal.ZERO)
                         .owner(user)
+                        .isDeleted(false)
                         .build();
                 allCards.add(cardRepository.save(card));
             }
@@ -126,17 +132,64 @@ public class DataSeeder {
     }
 
     /**
-     * Generates a random 16-digit card number. This is a simplified version and does not
-     * include the Luhn algorithm for card validation.
+     * Generates a valid-looking random card number that conforms to one of the predefined
+     * card number formats defined in the {@link CardType} enum.
+     * <p>
+     * The method randomly selects a {@link CardType}, then generates a card number that starts
+     * with a prefix matching that type's expected pattern and fills the remaining digits to meet
+     * the required length.
+     * <p>
+     * Note: This method does not perform Luhn validation; it's intended for testing purposes only.
      *
-     * @return a random 16-digit card number.
+     * @return a randomly generated card number as a {@link String}
+     * @throws IllegalStateException if an unknown {@link CardType} is encountered
      */
     private String generateCardNumber() {
+        int typeIndex = random.nextInt(CardType.values().length);
+        CardType type = CardType.values()[typeIndex];
+
+        switch (type) {
+            case VISA:
+                return "4" + generateDigits(12 + random.nextInt(4)); // 13–16 digits
+            case MASTERCARD:
+                return "5" + (1 + random.nextInt(5)) + generateDigits(14);
+            case AMERICAN_EXPRESS:
+                return "3" + (random.nextBoolean() ? "4" : "7") + generateDigits(13);
+            case BANK_SPECIFIC:
+                String prefix = List.of("2200", "2201", "2202").get(random.nextInt(3));
+                return prefix + generateDigits(12); // total 16 digits
+            default:
+                throw new IllegalStateException("Unexpected card type");
+        }
+    }
+
+    /**
+     * Generates a string of random digits of the specified length.
+     *
+     * @param length the number of digits to generate
+     * @return a string composed of numeric characters (0–9)
+     */
+    private String generateDigits(int length) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
+        for (int i = 0; i < length; i++) {
             sb.append(random.nextInt(10));
         }
         return sb.toString();
+    }
+
+    /**
+     * Determines the type of the current card.
+     *
+     * @param cardNumber current card number
+     * @return CardType for current card number
+     */
+    private CardType determineCardType(String cardNumber) {
+        for (CardType type : CardType.values()) {
+            if (cardNumber.matches("^" + type.getRegex())) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Unknown card type for number: " + cardNumber);
     }
 
 }

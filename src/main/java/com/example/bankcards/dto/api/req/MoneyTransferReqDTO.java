@@ -38,7 +38,7 @@ public class MoneyTransferReqDTO {
     private EncryptedCardNumber toCardNumber;
 
     @NotNull(message = TRANSFER_AMOUNT_CANNOT_BE_NUL)
-    @DecimalMin(value = "0.00", message = TRANSFER_AMOUNT_BE_POSITIVE)
+    @DecimalMin(value = "0.00", message = TRANSFER_AMOUNT_MUST_BE_POSITIVE)
     private BigDecimal amount;
 
     @Override

@@ -7,5 +7,7 @@
 
     <include file="02.06.2025-create-indexes-v2.0.xml" relativeToChangelogFile="true"/>
     <include file="02.06.2025-create_backup_account_table-v2.0.xml" relativeToChangelogFile="true"/>
+    <include file="02.06.2025-cards-add-card-type-and_is_deleted_columns-v2.0.xml" relativeToChangelogFile="true"/>
+    <include file="02.06.2025-cards-add-unique-constraint-v2.0.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

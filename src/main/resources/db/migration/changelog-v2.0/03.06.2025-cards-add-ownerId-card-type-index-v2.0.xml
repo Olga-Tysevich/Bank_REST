@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <changeSet id="cards-create-ownerId-card-type-index-1" author="Tysevich Olga">
+
+        <createIndex indexName="idx_cards_ownerId_card_type" tableName="cards">
+            <column name="owner_id"/>
+            <column name="card_type"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

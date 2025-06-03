@@ -13,6 +13,8 @@ spring:
         type: ${CRYPTO_TYPE}
         key: ${SECRET_KEY}
     card:
+      expiration:
+        years: 3
       balance:
         min: ${MIN_CARD_BALANCE}
       transfer:

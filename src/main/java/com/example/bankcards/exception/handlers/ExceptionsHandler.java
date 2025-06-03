@@ -5,6 +5,7 @@ import com.example.bankcards.exception.ProhibitedException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.UnavailableException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -80,11 +81,10 @@ public class ExceptionsHandler {
         return buildExceptionResponse(HttpStatus.NOT_FOUND, e);
     }
 
-//    @ExceptionHandler({
-//    })
-//    public ResponseEntity<?> conflictExceptions(Exception e) {
-//        return buildExceptionResponse(HttpStatus.CONFLICT, e);
-//    }
+    @ExceptionHandler({DataIntegrityViolationException.class})
+    public ResponseEntity<?> conflictExceptions(Exception e) {
+        return buildExceptionResponse(HttpStatus.CONFLICT, e);
+    }
 
     @ExceptionHandler({
             UnavailableException.class,

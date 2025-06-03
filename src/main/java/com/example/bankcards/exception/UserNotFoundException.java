@@ -1,6 +1,7 @@
 package com.example.bankcards.exception;
 
 
+import static com.example.bankcards.util.Constants.ACTION_IS_PROHIBITED;
 import static com.example.bankcards.util.Constants.USER_NOT_FOUND;
 
 /**
@@ -11,8 +12,8 @@ public class UserNotFoundException extends RuntimeException {
     /**
      * Constructs a new UserNotFoundException with a default error message.
      */
-    public UserNotFoundException() {
-        super(USER_NOT_FOUND);
+    public UserNotFoundException(Long userId) {
+        super(String.format(USER_NOT_FOUND, userId));
     }
 
     /**
