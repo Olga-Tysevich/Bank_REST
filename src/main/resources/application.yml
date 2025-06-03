@@ -60,6 +60,7 @@ spring:
       name: confirmedTransferQueueName
 
   schedule:
+
     queueProcessor:
       fixedRate: 5000
     timing:
@@ -67,6 +68,9 @@ spring:
         cancel: 30000
         initialDelay: 0
         retry: 60000
+      card:
+        expiry: 30000
+        initialDelay: 60000
 
   app:
     web:

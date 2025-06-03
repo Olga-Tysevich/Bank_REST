@@ -24,9 +24,13 @@ import com.example.bankcards.service.EncryptionService;
 import com.example.bankcards.util.PrincipalExtractor;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +45,7 @@ import java.util.Optional;
  * Implementation of the {@link CardService} interface.
  * Handles user`s cards.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CardServiceImpl implements CardService {
@@ -217,6 +222,12 @@ public class CardServiceImpl implements CardService {
      */
     @Transactional(readOnly = true)
     @Override
+    @Cacheable(
+            value = "cardsBySearch",
+            key = "#req.getFilter().toString() + #req.getPageNumber() + #req.getPageSize()",
+            unless = "#result.objects.isEmpty()",
+            cacheManager = "cacheManager"
+    )
     public PageResp<CardDTO> getCards(SearchReq<CardSearchFilter> req) {
         User user = PrincipalExtractor.getCurrentUser();
         Long ownerId = Objects.nonNull(user) ? user.getId() : null;
@@ -241,6 +252,45 @@ public class CardServiceImpl implements CardService {
         boolean isAdmin = Objects.nonNull(user) && user.isAdmin();
 
         return cardMapper.toPageResp(result, isAdmin);
+    }
+
+    /**
+     * Marks expired cards as expired.
+     * This method processes all cards that have expired and marks them with an expired status.
+     */
+    @Retryable(
+            retryFor = {Exception.class},
+            backoff = @Backoff(delay = 100)
+    )
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void markExpiredCards() {
+        int page = 0;
+        int size = 500;
+        Page<Card> cards;
+
+        do {
+            cards = cardRepository.findCardsByExpirationBeforeAndStatusNot(PageRequest.of(page, size), LocalDate.now(), "EXPIRED");
+            cards.forEach(card -> {
+                try {
+                    processCardExpiration(card);
+                } catch (Exception e) {
+                    log.error("Error processing expired card {}: {}", card.getId(), e.getMessage());
+                }
+            });
+            page++;
+        } while (cards.hasNext());
+    }
+
+    /**
+     * Processes a single card expiration.
+     * This method marks the card as expired.
+     *
+     * @param card the card to be marked as expired
+     */
+    @Transactional
+    public void processCardExpiration(Card card) {
+        card.setStatus(CardStatus.EXPIRED);
+        cardRepository.save(card);
     }
 
     /**

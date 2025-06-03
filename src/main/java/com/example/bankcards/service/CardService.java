@@ -70,4 +70,10 @@ public interface CardService {
      * @throws IllegalArgumentException If the search request is invalid or no cards match the criteria.
      */
     PageResp<CardDTO> getCards(@NotNull SearchReq<CardSearchFilter> req);
+
+    /**
+     * Marks expired cards as expired.
+     * This method processes all cards that have expired and marks them with an expired status.
+     */
+    void markExpiredCards();
 }
