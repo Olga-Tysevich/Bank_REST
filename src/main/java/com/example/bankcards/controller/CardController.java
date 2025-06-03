@@ -1,6 +1,7 @@
 package com.example.bankcards.controller;
 
 import com.example.bankcards.dto.api.req.AddCardDTO;
+import com.example.bankcards.dto.api.req.notifications.CardBlockRequestNotificationDTO;
 import com.example.bankcards.dto.api.req.SearchReq;
 import com.example.bankcards.dto.api.req.UpdateCardDTO;
 import com.example.bankcards.dto.api.req.filters.CardSearchFilter;
@@ -8,6 +9,7 @@ import com.example.bankcards.dto.api.resp.CardDTO;
 import com.example.bankcards.dto.api.resp.PageResp;
 import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.service.CardService;
+import com.example.bankcards.service.NotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -34,6 +36,7 @@ import static com.example.bankcards.util.Constants.ID_MUST_BE_POSITIVE;
 @Validated
 public class CardController {
     private final CardService cardService;
+    private final NotificationService notificationService;
 
     @Operation(
             summary = "Add a new card",
@@ -81,7 +84,7 @@ public class CardController {
         return ResponseEntity.ok().body(
                 Map.of(
                         "updated", true,
-                        "card id:", cardId
+                        "cardId", cardId
                 )
         );
     }
@@ -95,7 +98,7 @@ public class CardController {
             }
     )
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @PostMapping("/admin/update/{id}/{status}")
+    @PostMapping("/admin/{id}/{status}/update")
     public ResponseEntity<?> setCardStatus(
             @Parameter(description = "Card ID", example = "1")
             @PathVariable @Min(1) Long id,
@@ -106,7 +109,7 @@ public class CardController {
         return ResponseEntity.ok().body(
                 Map.of(
                         "updated", true,
-                        "card id:", cardId
+                        "cardId", cardId
                 )
         );
     }
@@ -120,7 +123,7 @@ public class CardController {
             }
     )
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    @DeleteMapping("/admin/delete/{id}")
+    @DeleteMapping("/admin/{id}/delete")
     public ResponseEntity<?> deleteProject(
             @Parameter(description = "Card ID", example = "1")
             @PathVariable
@@ -131,7 +134,7 @@ public class CardController {
         return ResponseEntity.ok().body(
                 Map.of(
                         "deleted", true,
-                        "card id:", cardId
+                        "cardId", cardId
                 )
         );
     }
@@ -178,6 +181,19 @@ public class CardController {
             @RequestBody @Valid SearchReq<CardSearchFilter> req) {
         PageResp<CardDTO> cardPage = cardService.getCards(req);
         return ResponseEntity.ok(cardPage);
+    }
+
+    @PreAuthorize("hasRole('ROLE_USER')")
+    @PostMapping("/block")
+    public ResponseEntity<?> createCardBlockRequest(@RequestBody @Valid CardBlockRequestNotificationDTO req) {
+
+        Long cardId = notificationService.createNotification(req);
+        return ResponseEntity.status(HttpStatus.CREATED).body(
+                Map.of(
+                        "cardId", req.getCardId(),
+                        "CardBlockRequestId:", cardId
+                )
+        );
     }
 
 }

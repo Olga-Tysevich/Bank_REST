@@ -70,4 +70,5 @@ public interface CardService {
      * @throws IllegalArgumentException If the search request is invalid or no cards match the criteria.
      */
     PageResp<CardDTO> getCards(@NotNull SearchReq<CardSearchFilter> req);
+
 }

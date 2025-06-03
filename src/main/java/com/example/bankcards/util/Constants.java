@@ -17,10 +17,13 @@ public interface Constants {
     String ID_MUST_BE_POSITIVE = "ID must be positive!";
     String ENROLLMENT_CANNOT_BE_NULL = "Enrollment cannot be null!";
     String IS_DELETED_CANNOT_BE_NULL = "Is deleted cannot be null!";
+    String IS_CONFIRMED_CANNOT_BE_NULL = "Is confirmed cannot be null!";
     String CARD_TYPE_CODE_CANNOT_BE_NULL = "Card type code cannot be null!";
     String SENDER_DATA_CANNOT_BE_NULL_OR_EMPTY = "ID cannot be null or empty!";
     String ROLE_CANNOT_BE_NULL = "Role cannot be null!";
-    String EXPIRATION_DATE_CANNOT_BE_NULL = "End date cannot be null.";
+    String EXPIRATION_DATE_CANNOT_BE_NULL = "Expiration date cannot be null.";
+    String CREATED_AT_DATE_CANNOT_BE_NULL = "Created at date cannot be null.";
+    String UPDATED_AT_DATE_CANNOT_BE_NULL = "Updated at date cannot be null.";
     String USER_CANNOT_BE_NULL = "User must be specified";
     String CARD_NUMBER_CANNOT_BE_NULL = "Cart number cannot be null";
     String NAME_CANNOT_BE_EMPTY = "Name cannot be null or empty!";
@@ -31,6 +34,7 @@ public interface Constants {
     String INVALID_CARD_MASK_MESSAGE = "The card number mask must be in the valid format, for example: **** **** **** 1234.";
     String USERNAME_CANNOT_BE_NULL_OR_EMPTY = "Email cannot be null or empty!";
     String REFRESH_TOKEN_CANNOT_BE_NULL_OR_EMPTY = "Refresh token cannot be null or empty!";
+    String CARD_CANNOT_BE_NULL = "Card cannot be null!";
     String CARD_FROM_CANNOT_BE_NULL = "Card from cannot be null!";
     String CARD_TO_CANNOT_BE_NULL = "Card to cannot be null!";
     String CARD_STATUS_CANNOT_BE_NULL = "Card status to cannot be null!";
