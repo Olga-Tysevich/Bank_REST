@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static com.example.bankcards.util.Constants.ID_CANNOT_BE_NULL;
@@ -111,6 +112,18 @@ public interface CardRepository extends JpaRepository<Card, Long>, JpaSpecificat
      * @return a {@link Page} of {@link Card} objects belonging to the owner
      */
     Page<Card> findAllByOwner_Id(@NotNull(message = ID_CANNOT_BE_NULL) Long ownerId, Pageable pageable);
+
+    /**
+     * Finds cards that are expired.
+     * This method returns cards that are past the expiration date but have not been marked as expired.
+     *
+     * @param pageable the pageable object to handle pagination
+     * @param expirationDate the date that is compared against the expiration date of the card
+     * @param status the status of the card to filter out already expired cards
+     * @return a page of expired cards
+     */
+    Page<Card> findCardsByExpirationBeforeAndStatusNot(Pageable pageable, LocalDate expirationDate, String status);
+
 
 
 }
