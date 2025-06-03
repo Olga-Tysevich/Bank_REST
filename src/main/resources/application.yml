@@ -56,8 +56,11 @@ spring:
   queues:
     transfer:
       name: transferQueue
+    cardBlockRequestCreated:
+      name: cardBlockRequestCreatedQueue
     confirmedTransfer:
       name: confirmedTransferQueueName
+
 
   schedule:
     queueProcessor:

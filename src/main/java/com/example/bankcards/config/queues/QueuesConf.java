@@ -17,4 +17,7 @@ public class QueuesConf {
     @Value("${spring.queues.confirmedTransfer.name:confirmedTransferQueueName}")
     private String confirmedTransferQueueName;
 
+    @Value("${spring.queues.cardBlockRequestCreated.name:cardBlockRequestCreated}")
+    private String cardBlockRequestCreated;
+
 }

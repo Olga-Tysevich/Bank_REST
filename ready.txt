@@ -1,0 +1,72 @@
+dev-initial:
+
+Сделано:
+1) Созданы энамы
+ - CardStatus
+ - RoleEnum
+ - TransferStatus
+
+2) Добавлены энтити:
+    - Card
+    - RefreshToken
+    - Role
+    - Transfer
+    - User
+3) Добавлены чейнджесты для создания таблиц и индексов
+
+4) Настроен спринг секьюрити на работу с jwt
+
+5) Добавлен контроллер авторизации
+
+6) Написан загрузчик переменных среды и исходных данных
+
+7) Добавлены сервисы, отвечающие за авторизацию
+
+8) Настроены докер для бд, редиса  и приложения
+
+
+Сделано:
+1) Добавила текущие классы в readme.md файл утилитного модуля
+2) Добавила текущие классы в readme.md файл модуля с репозиториями
+3) Добавила текущие классы в readme.md файл модуля с энтити
+3) Добавила текущие классы в readme.md файл модуля с дто
+
+
+Сделано:
+1) Добавлены конфиги для приложения в целом, очередей и обновлен конфиг редиса
+2) Добавлена DenyCancelTransfer запрещающая вызывать отмену трансфера извне указанного контекста и ее реализация
+3) Добавлены ДТО: MoneyTransferReqDTO, UserLoginReqDTO, LoggedUserRespDTO,TransferMessageDTO
+4) Добавлен конвертер SenderDataConverter для создания рандомных переводов
+5) Добавлена конвертация в энтити в TransferMapper
+6) Добавлен метод проверки статуса карты в CardStatus
+7) Добавлен энам SourceOfFunds для создания особого случая перевода
+8) Добавлен резервный аккаунт для пользователя BackupAccount
+9) Обновлена суцность Card добавлены методы добавления денег холд и обратно
+10) Добавлен модуль ивентов для обработки событий и очередей приложения
+11) Добавлен BackupAccountRepository, обновлен CardRepository(getOwnerIdById, findByIdAndSufficientBalance, isBlockedOrExpired),
+TransferRepository(методы: findTransferIdsWithStatusPendingAndCreatedAToToday, findByIdForUpdate)
+12) Написана основная логика TransferService(методы создания и отмены трансфера)
+
+
+Сделано:
+1) Добавлена система шифрования номера карты
+2) Добавлен класс EncryptedCardNumber, представляющий собой закодированный номер карты и его маску, а так же десериализатор для него(EncryptedCardNumberDeserializer)
+3) Обновлен MoneyTransferReqDTO и метод createTransferRequest из TransferServiceImpl(теперь можно делать переводы по номерам карт)
+4) Добавлен сервис шифрования EncryptionService
+
+Сделано:
+1) Добавлены десериализаторы CardTypeCodeDeserializer и EnrollDTODeserializer
+2) Добавлен CardController и сваггер для него
+3) Добавлены ДТО, связанные с поиском, созданием и обновлением карт
+4) В класс Card добавлены поля type, isDeleted, миграции и индексы для них
+5) Обновлен ExceptionHandler(метод conflictExceptions)
+6) Добавлен CardSpecification для поиска Card по условиям
+7) Добавлен CardService и логика для CRUD и поиска по Card
+8) Добавлены методы для CardRepository (findAllByOwner_Id, existsByIdAndOwnerId, addToBalance, findIdByNumber, findLastByCardType)
+
+Сделано?
+1) Добавлены сущности: AdminNotification, CardBlockRequest
+2) Событие CardBlockRequestCreatedMessageDTO, очередь для него, слушатель CardBlockRequestEventListener и процессор CardBlockRequestQueueProcessor
+3) Добавлен CardBlockRequestRepository
+4) Добавлен метод findRandomAdmin в UserRepository
+5) Добавлен CardBlockRequestService и логика обработки запроса блокировки Card
