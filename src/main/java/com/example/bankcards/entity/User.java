@@ -1,5 +1,6 @@
 package com.example.bankcards.entity;
 
+import com.example.bankcards.entity.enums.RoleEnum;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -69,10 +70,16 @@ public class User implements UserDetails {
         return roleSet;
     }
 
-
     @Override
     public String getUsername() {
         return username;
+    }
+
+    public boolean isAdmin() {
+        return roleSet.stream()
+                .map(Role::getRole)
+                .filter(RoleEnum.ROLE_ADMIN::equals)
+                .count() == 1;
     }
 
 }

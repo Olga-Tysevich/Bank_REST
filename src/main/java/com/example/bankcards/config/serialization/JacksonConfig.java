@@ -1,7 +1,12 @@
 package com.example.bankcards.config.serialization;
 
+import com.example.bankcards.config.serialization.deserializers.CardTypeCodeDeserializer;
 import com.example.bankcards.config.serialization.deserializers.EncryptedCardNumberDeserializer;
+import com.example.bankcards.config.serialization.deserializers.EnrollDTODeserializer;
 import com.example.bankcards.dto.api.crypto.EncryptedCardNumber;
+import com.example.bankcards.dto.api.req.EnrollDTO;
+import com.example.bankcards.dto.api.req.UpdateCardDTO;
+import com.example.bankcards.entity.enums.CardType;
 import com.example.bankcards.service.EncryptionService;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.context.annotation.Bean;
@@ -34,6 +39,8 @@ public class JacksonConfig {
     public SimpleModule encryptionModule(EncryptionService encryptionService) {
         SimpleModule module = new SimpleModule();
         module.addDeserializer(EncryptedCardNumber.class, new EncryptedCardNumberDeserializer(encryptionService));
+        module.addDeserializer(CardType.class, new CardTypeCodeDeserializer());
+        module.addDeserializer(EnrollDTO.class, new EnrollDTODeserializer());
         return module;
     }
 

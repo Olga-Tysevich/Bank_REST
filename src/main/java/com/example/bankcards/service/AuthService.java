@@ -1,31 +1,33 @@
 package com.example.bankcards.service;
 
-
 import com.example.bankcards.dto.api.req.UserLoginReqDTO;
 import com.example.bankcards.dto.api.resp.LoggedUserRespDTO;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 /**
- * Interface for authenticating and logging in users.
+ * The {@code AuthService} interface defines methods for authenticating and logging in users.
+ * Implementations of this interface handle user login and token-based re-authentication (refresh token).
  */
 public interface AuthService {
+
     /**
-     * Authenticates the user based on the provided credentials and generates a pair of JWT tokens (access and refresh tokens).
+     * Authenticates a user and returns the logged-in user's details.
+     * This method processes the login request, validates the credentials, and returns the user information along with a token.
      *
-     * @param req the request object containing the user's login details, such as username and password.
-     * @return {@link LoggedUserRespDTO} containing the generated JWT tokens (access and refresh tokens) for the logged-in user.
-     * @throws org.springframework.security.authentication.BadCredentialsException if authentication fails.
+     * @param req The login request containing the user's credentials, encapsulated in a {@link UserLoginReqDTO} object.
+     * @return A {@link LoggedUserRespDTO} containing the authenticated user's details and a token.
+     * @throws IllegalArgumentException If the credentials are invalid or the login fails.
      */
     LoggedUserRespDTO loginUser(@NotNull UserLoginReqDTO req);
 
     /**
-     * Regenerates a pair of JWT tokens (access and refresh tokens) using the provided refresh token.
+     * Re-authenticates the user using the provided refresh token.
+     * This method is used to generate a new authentication token when the original token has expired.
      *
-     * @param refreshToken the refresh token used to regenerate the access and refresh tokens.
-     * @return {@link LoggedUserRespDTO} containing the new pair of JWT tokens.
-     * @throws IllegalArgumentException if the refresh token is invalid or expired.
+     * @param refreshToken The refresh token used to obtain a new authentication token.
+     * @return A {@link LoggedUserRespDTO} containing the logged-in user's details and a new authentication token.
+     * @throws IllegalArgumentException If the refresh token is invalid or has expired.
      */
     LoggedUserRespDTO reLoginUser(@NotBlank String refreshToken);
-
 }

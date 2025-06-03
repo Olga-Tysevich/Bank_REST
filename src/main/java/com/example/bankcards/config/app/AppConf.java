@@ -17,4 +17,7 @@ public class AppConf {
     @Value("${spring.application.card.balance.min:0.01}")
     private String minBalanceStr;
 
+    @Value("${spring.application.card.expiration.years:3}")
+    private int cardExpirationYears;
+
 }

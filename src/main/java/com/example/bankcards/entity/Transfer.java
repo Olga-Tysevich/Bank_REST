@@ -42,8 +42,8 @@ public class Transfer {
     private Card toCard;
 
     @Column(name = "amount", precision = 19, scale = 2)
-    @NotNull(message = TRANSFER_AMOUNT_BE_POSITIVE)
-    @DecimalMin(value = "0.01", message = TRANSFER_AMOUNT_BE_POSITIVE)
+    @NotNull(message = TRANSFER_AMOUNT_MUST_BE_POSITIVE)
+    @DecimalMin(value = "0.01", message = TRANSFER_AMOUNT_MUST_BE_POSITIVE)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)

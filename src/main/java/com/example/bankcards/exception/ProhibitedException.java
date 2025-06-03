@@ -1,7 +1,7 @@
 package com.example.bankcards.exception;
 
 
-import static com.example.bankcards.util.Constants.USER_NOT_FOUND;
+import static com.example.bankcards.util.Constants.ACTION_IS_PROHIBITED;
 
 /**
  * This exception is thrown when an attempt is made to perform an action that is not allowed for the given user.
@@ -9,10 +9,10 @@ import static com.example.bankcards.util.Constants.USER_NOT_FOUND;
 public class ProhibitedException extends RuntimeException {
 
     /**
-     * Constructs a new ProhibitedException with a default error message.
+     * Constructs a new ProhibitedException with a default error message for current user.
      */
-    public ProhibitedException() {
-        super(USER_NOT_FOUND);
+    public ProhibitedException(Long userId) {
+        super(String.format(ACTION_IS_PROHIBITED, userId));
     }
 
     /**

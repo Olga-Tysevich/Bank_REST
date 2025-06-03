@@ -33,8 +33,8 @@ public class TransferMessageDTO implements Serializable {
     @NotNull(message = CARD_TO_CANNOT_BE_NULL)
     private Long toCardId;
 
-    @NotNull(message = TRANSFER_AMOUNT_BE_POSITIVE)
-    @DecimalMin(value = "0.00", message = TRANSFER_AMOUNT_BE_POSITIVE)
+    @NotNull(message = TRANSFER_AMOUNT_MUST_BE_POSITIVE)
+    @DecimalMin(value = "0.00", message = TRANSFER_AMOUNT_MUST_BE_POSITIVE)
     private BigDecimal amount;
 
     @PastOrPresent(message = TRANSFER_DATE_MUST_BE_IN_PAST)
@@ -44,7 +44,7 @@ public class TransferMessageDTO implements Serializable {
     @PastOrPresent(message = TRANSFER_DATE_MUST_BE_IN_PAST)
     private LocalDateTime confirmedAt;
 
-    @NotNull(message = TRANSFER_STATUS_CANNOT_BE_NUL)
+    @NotNull(message = TRANSFER_STATUS_CANNOT_BE_NULL)
     private TransferStatus status;
 
     @NotNull(message = VERSION_CANNOT_BE_NULL)
