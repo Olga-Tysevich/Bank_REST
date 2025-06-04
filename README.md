@@ -8,12 +8,11 @@
 * **Spring Boot 3.4.5**
 * **PostgreSQL**
 * **Redis**
-* **Elasticsearch**
 * **JWT для аутентификации**
 * **Liquibase для миграций базы данных**
 * **Spring Security**
 * **MapStruct для маппинга DTO**
-* **Docker для окружений разработки**
+* **Docke**
 * **Swagger для документации API**
 
 ## Как запустить проект
