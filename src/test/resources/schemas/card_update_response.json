@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UpdateCardResponse",
+  "type": "object",
+  "properties": {
+    "updated": {
+      "type": "boolean",
+      "const": true
+    },
+    "cardId": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": ["updated", "cardId"],
+  "additionalProperties": false
+}

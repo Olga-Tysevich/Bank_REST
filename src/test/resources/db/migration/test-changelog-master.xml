@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <!-- 1. Подключаем основной changelog из production -->
+    <include file="classpath:db/migration/changelog-master.xml" relativeToChangelogFile="false"/>
+
+    <!-- 2. Добавляем тестовые данные ТОЛЬКО для тестов -->
+    <include file="classpath:/db/migration/insert-random-data-for-tests-only.xml" relativeToChangelogFile="false"/>
+
+</databaseChangeLog>

@@ -14,7 +14,6 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 import static com.example.bankcards.util.Constants.*;
-import static com.example.bankcards.util.Constants.UPDATED_AT_DATE_CANNOT_BE_NULL;
 
 /**
  * This abstract class represents notifications intended for processing by the admin.
@@ -35,12 +34,10 @@ public abstract class AdminNotification {
 
     @Column(name = "created_at", updatable = false, nullable = false)
     @CreationTimestamp
-    @NotNull(message = CREATED_AT_DATE_CANNOT_BE_NULL)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     @UpdateTimestamp
-    @NotNull(message = UPDATED_AT_DATE_CANNOT_BE_NULL)
     private LocalDateTime updatedAt;
 
     @ManyToOne(optional = false)
@@ -49,8 +46,7 @@ public abstract class AdminNotification {
     private User fromUser;
 
     @ManyToOne(optional = false)
-    @JoinColumn(name = "appointed_admin_id", nullable = false)
-    @NotNull(message = USER_CANNOT_BE_NULL)
+    @JoinColumn(name = "appointed_admin_id")
     private User appointedAdmin;
 
     @Column(name = "note", nullable = false)

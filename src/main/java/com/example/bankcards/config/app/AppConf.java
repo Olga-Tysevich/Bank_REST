@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Getter
 public class AppConf {
 
-    @Value("${spring.application.card.transfer.permissions.yourselfOnly:false}")
+    @Value("${spring.application.card.transfer.betweenCards.permissions.onlyYourself:false}")
     boolean transferAllowedYourselfOnly;
 
     @Value("${spring.application.card.balance.min:0.01}")

@@ -3,7 +3,6 @@ package com.example.bankcards.entity;
 import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.entity.enums.CardType;
 import com.example.bankcards.entity.listeners.CardListener;
-import com.example.bankcards.util.validators.MinBalance;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -11,7 +10,6 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static com.example.bankcards.entity.enums.CardType.CARD_NUMBER_REGEX;
 import static com.example.bankcards.util.Constants.*;
 
 /**
@@ -41,7 +39,6 @@ public class Card {
 
     @Column(name = "number", nullable = false)
     @NotNull(message = CARD_NUMBER_CANNOT_BE_NULL)
-    @Pattern(regexp = CARD_NUMBER_REGEX, message = INVALID_CARD_NUMBER_MESSAGE)
     private String number;
 
     @Column(name = "expiration", nullable = false)
@@ -55,7 +52,6 @@ public class Card {
 
     @Column(name = "balance", nullable = false, precision = 19, scale = 2)
     @NotNull(message = BALANCE_CANNOT_BE_NULL)
-    @MinBalance
     @Builder.Default
     private BigDecimal balance = BigDecimal.ZERO;
 
@@ -85,6 +81,7 @@ public class Card {
             throw new IllegalArgumentException("Insufficient available balance to hold funds.");
         }
         this.hold = this.hold.add(amount);
+        this.balance = this.balance.subtract(amount);
     }
 
     public void releaseFromHold(@NotNull(message = TRANSFER_AMOUNT_CANNOT_BE_NUL)

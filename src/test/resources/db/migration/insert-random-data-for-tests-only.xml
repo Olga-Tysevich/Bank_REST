@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+
+    <changeSet id="init-test-data" author="Tysevich Olga">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="users"/>
+            <tableExists tableName="bank_rest_roles"/>
+            <tableExists tableName="cards"/>
+            <tableExists tableName="transfers"/>
+            <tableExists tableName="backup_accounts"/>
+            <tableExists tableName="refresh_tokens"/>
+        </preConditions>
+
+        <insert tableName="bank_rest_roles">
+            <column name="id" value="1"/>
+            <column name="role" value="ROLE_USER"/>
+        </insert>
+        <insert tableName="bank_rest_roles">
+            <column name="id" value="2"/>
+            <column name="role" value="ROLE_ADMIN"/>
+        </insert>
+
+        <insert tableName="users">
+            <column name="id" value="1"/>
+            <column name="username" value="admin@bank.com"/>
+            <column name="name" value="Admin"/>
+            <column name="surname" value="Adminov"/>
+            <column name="date_of_birth" value="1980-01-15"/>
+            <column name="password" value="$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6"/>
+        </insert>
+        <insert tableName="users">
+            <column name="id" value="2"/>
+            <column name="username" value="user@bank.com"/>
+            <column name="name" value="Ivan"/>
+            <column name="surname" value="Ivanov"/>
+            <column name="date_of_birth" value="1990-05-20"/>
+            <column name="password" value="$2a$10$slYQmyNdGzTn7ZLBXBChFOC9f6kFjAqPhccnP6DxlWXx2lPk1C3G6"/>
+        </insert>
+
+        <insert tableName="users_roles">
+            <column name="user_id" value="1"/>
+            <column name="role_id" value="2"/>
+        </insert>
+        <insert tableName="users_roles">
+            <column name="user_id" value="1"/>
+            <column name="role_id" value="1"/>
+        </insert>
+        <insert tableName="users_roles">
+            <column name="user_id" value="2"/>
+            <column name="role_id" value="1"/>
+        </insert>
+
+        <insert tableName="cards">
+            <column name="id" value="1"/>
+            <column name="card_type" value="VISA"/>
+            <column name="number" value="ENC:7bK/2TnT/t14EvJ54wuadgbb0lJO2pSgRxctIDarhYM="/>
+            <column name="expiration" value="2026-12-31"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="balance" value="100000.00"/>
+            <column name="hold" value="0.00"/>
+            <column name="owner_id" value="1"/>
+            <column name="is_deleted" value="false"/>
+            <column name="version" value="1"/>
+        </insert>
+        <insert tableName="cards">
+            <column name="id" value="2"/>
+            <column name="card_type" value="MASTERCARD"/>
+            <column name="number" value="ENC:aYPwO036kxaaWORShhfwAgbb0lJO2pSgRxctIDarhYM="/>
+            <column name="expiration" value="2025-10-31"/>
+            <column name="status" value="BLOCKED"/>
+            <column name="balance" value="5000.00"/>
+            <column name="hold" value="0.00"/>
+            <column name="owner_id" value="1"/>
+            <column name="is_deleted" value="false"/>
+            <column name="version" value="1"/>
+        </insert>
+        <insert tableName="cards">
+            <column name="id" value="3"/>
+            <column name="card_type" value="AMERICAN_EXPRESS"/>
+            <column name="number" value="ENC:NZ24g+T5b2GgUW1gKOrZ4Q=="/>
+            <column name="expiration" value="2024-05-31"/>
+            <column name="status" value="ACTIVE"/>
+            <column name="balance" value="20000.00"/>
+            <column name="hold" value="0.00"/>
+            <column name="owner_id" value="2"/>
+            <column name="is_deleted" value="false"/>
+            <column name="version" value="1"/>
+        </insert>
+        <insert tableName="cards">
+            <column name="id" value="4"/>
+            <column name="card_type" value="BANK_SPECIFIC"/>
+            <column name="number" value="ENC:7uCjUvil9P8KTjPmxNHsgQbb0lJO2pSgRxctIDarhYM="/>
+            <column name="expiration" value="2023-01-31"/>
+            <column name="status" value="EXPIRED"/>
+            <column name="balance" value="0.00"/>
+            <column name="hold" value="0.00"/>
+            <column name="owner_id" value="2"/>
+            <column name="is_deleted" value="false"/>
+            <column name="version" value="1"/>
+        </insert>
+
+        <insert tableName="transfers">
+            <column name="id" value="1"/>
+            <column name="from_card_id" value="1"/>
+            <column name="to_card_id" value="3"/>
+            <column name="amount" value="1000.00"/>
+            <column name="status" value="COMPLETED"/>
+            <column name="created_at" value="2023-10-01 12:00:00"/>
+            <column name="confirmed_at" value="2023-10-01 12:05:00"/>
+            <column name="version" value="1"/>
+        </insert>
+        <insert tableName="transfers">
+            <column name="id" value="2"/>
+            <column name="from_card_id" value="3"/>
+            <column name="to_card_id" value="1"/>
+            <column name="amount" value="500.00"/>
+            <column name="status" value="PENDING"/>
+            <column name="created_at" value="2023-10-02 10:00:00"/>
+            <column name="version" value="1"/>
+        </insert>
+
+        <insert tableName="backup_accounts">
+            <column name="id" value="1"/>
+            <column name="source_of_funds" value="CASH_CONTRIBUTED_BY_ORGANIZATION"/>
+            <column name="sender_data" value='{"ORGANIZATION_INN":"1234567890","FULL_NAME":"Company Ltd","DOCUMENT_TYPE":"Certificate","DOCUMENT_NUMBER":"123","DOCUMENT_ISSUED_BY":"State","ADDRESS":"Moscow","PHONE":"1234567","PAYMENT_PURPOSE":"Charity"}'/>
+            <column name="owner_id" value="1"/>
+            <column name="amount" value="10000.00"/>
+        </insert>
+        <insert tableName="backup_accounts">
+            <column name="id" value="2"/>
+            <column name="source_of_funds" value="CASH_CONTRIBUTED_BY_INDIVIDUAL"/>
+            <column name="sender_data" value='{"FULL_NAME":"Ivan Ivanov","DOCUMENT_TYPE":"Passport","DOCUMENT_NUMBER":"123456","DOCUMENT_ISSUED_BY":"Police","PHONE":"7654321","PAYMENT_PURPOSE":"Gift"}'/>
+            <column name="owner_id" value="2"/>
+            <column name="amount" value="5000.00"/>
+        </insert>
+
+        <insert tableName="refresh_tokens">
+            <column name="username" value="admin@bank.com"/>
+            <column name="refresh_token" value="admin_refresh_token"/>
+        </insert>
+        <insert tableName="refresh_tokens">
+            <column name="username" value="user@bank.com"/>
+            <column name="refresh_token" value="user_refresh_token"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="update-sequences" author="your_name">
+        <sql>
+            <!-- For PostgreSQL -->
+            SELECT setval('user_id_seq', (SELECT MAX(id) FROM users));
+            SELECT setval('card_id_seq', (SELECT MAX(id) FROM cards));
+            SELECT setval('transfer_id_seq', (SELECT MAX(id) FROM transfers));
+            SELECT setval('backup_account_id_seq', (SELECT MAX(id) FROM backup_accounts));
+            SELECT setval('role_id_seq', (SELECT MAX(id) FROM bank_rest_roles));
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

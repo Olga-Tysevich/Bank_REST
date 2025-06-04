@@ -55,14 +55,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
      */
     private final UserDetailsService userDetailsService;
 
-    @Value("${spring.app.web.ignoredUrls:*}")
+    @Value("${spring.application.web.ignoredUrls:*}")
     private List<String> ignoredUrls;
 
     /**
      * Determines whether the filter should not be applied for the given request.
      * <p>
      * The filter is skipped if the request path matches any of the ignored URL patterns.
-     * The ignored URLs are configurable through the {@code spring.app.web.ignoredUrls} property.
+     * The ignored URLs are configurable through the {@code spring.application.web.ignoredUrls} property.
      *
      * @param request the HTTP request to check
      * @return {@code true} if the filter should be skipped for this request, {@code false} otherwise

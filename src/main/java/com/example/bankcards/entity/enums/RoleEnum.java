@@ -1,9 +1,12 @@
 package com.example.bankcards.entity.enums;
 
 /**
- * Represents the roles that a user can have in the system.
- * USER_ROLE - Represents a regular user role.
- * ADMIN_ROLE - Represents an administrative user role.
+ * Enum representing the roles that a user can have in the system.
+ * <p>This enum defines two types of senders:</p>
+ * <ul>
+ *     <li>{@link #ROLE_USER} - User role.</li>
+ *     <li>{@link #ROLE_ADMIN} - Admin role.</li>
+ * </ul>
  */
 public enum RoleEnum {
     ROLE_USER,

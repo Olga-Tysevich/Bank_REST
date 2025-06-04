@@ -19,24 +19,24 @@ public enum CardType {
     /**
      * Represents a Visa card, which starts with '4' and has 13 to 16 digits.
      */
-    VISA(1, "Visa", "411111", "4[0-9]{12,15}"),
+    VISA(1, "Visa", "411111", "4[0-9]{12,15}", 16),
 
     /**
      * Represents a MasterCard, which starts with '5' and the second digit is between '1' and '5'.
      * The total length of the card number is 16 digits.
      */
-    MASTERCARD(2, "MasterCard", "511111", "5[1-5][0-9]{14}"),
+    MASTERCARD(2, "MasterCard", "511111", "5[1-5][0-9]{14}", 16),
 
     /**
      * Represents an American Express card, which starts with '3' followed by '47'.
      * The total length of the card number is 15 digits.
      */
-    AMERICAN_EXPRESS(3, "American Express", "371111", "3[47][0-9]{13}"),
+    AMERICAN_EXPRESS(3, "American Express", "371111", "3[47][0-9]{13}", 15),
 
     /**
      * Represents a card type starting with '2200', '2201', or '2202'.
      */
-    BANK_SPECIFIC(4, "Bank Specific", "220220", "2200|2201|2202");
+    BANK_SPECIFIC(4, "Bank Specific", "220220", "220[0-2][0-9]{12}", 16);
 
     public static final String MASKED_CARD_PATTERN = "^(\\*{4} ?)*\\d{4}$";
     public static final int DIGIT_IN_ONE_SECTION = 4;
@@ -45,6 +45,7 @@ public enum CardType {
     private final String name;
     private final String prefix;
     private final String regex;
+    private final int length;
 
     /**
      * Constructor for the enum, initializing the name and regex.
@@ -53,11 +54,12 @@ public enum CardType {
      * @param name     The name of the card type.
      * @param regex    The regex pattern corresponding to the card type's number.
      */
-    CardType(int typeCode, String name, String prefix, String regex) {
+    CardType(int typeCode, String name, String prefix, String regex, int length) {
         this.typeCode = typeCode;
         this.name = name;
         this.prefix = prefix;
         this.regex = regex;
+        this.length = length;
     }
 
     /**
@@ -66,7 +68,7 @@ public enum CardType {
      * The pattern combines individual card type regex patterns and can be used for validation purposes.
      * </p>
      */
-    public static final String CARD_NUMBER_REGEX = "^(2200|2201|2202|4[0-9]{12,15}|5[1-5][0-9]{14}|3[47][0-9]{13})[0-9]{13,16}$";
+    public static final String CARD_NUMBER_REGEX = "^(220[0-2][0-9]{12}|4[0-9]{12,15}|5[1-5][0-9]{14}|3[47][0-9]{13})$";
 
     /**
      * Gets the minimum code value for the card types.

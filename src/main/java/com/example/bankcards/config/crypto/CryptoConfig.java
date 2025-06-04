@@ -10,8 +10,16 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class CryptoConfig {
-    @Value("${spring.application.security.crypto.type}")
-    private String cryptoType;
+    @Value("${spring.application.security.crypto.algorithm}")
+    private String cryptoAlgorithm;
+
+    @Value("${spring.application.security.crypto.transformation}")
+    private String cryptoTransformation;
+
     @Value("${spring.application.security.crypto.key}")
-    private String secretKey;
+    private String cryptoSecretKey;
+
+    public String getCryptoAlgorithmWithTransformation() {
+        return cryptoAlgorithm + "/" + cryptoTransformation;
+    }
 }

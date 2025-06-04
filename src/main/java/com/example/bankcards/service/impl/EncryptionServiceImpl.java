@@ -33,9 +33,17 @@ public class EncryptionServiceImpl implements EncryptionService {
      */
     public EncryptionServiceImpl(CryptoConfig cryptoConfig) {
         this.cryptoConfig = cryptoConfig;
-        String algorithm = cryptoConfig.getCryptoType();
-        String secretKey = cryptoConfig.getSecretKey();
-        this.keySpec = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), algorithm);
+
+        String algorithm = cryptoConfig.getCryptoAlgorithm();
+        String secretKey = cryptoConfig.getCryptoSecretKey();
+
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
+
+        if ("AES".equals(algorithm) && (!(keyBytes.length == 16 || keyBytes.length == 24 || keyBytes.length == 32))) {
+            throw new IllegalArgumentException("Invalid AES key length: " + keyBytes.length + " bytes. Must be 16, 24, or 32.");
+        }
+
+        this.keySpec = new SecretKeySpec(keyBytes, algorithm);
     }
 
     /**
@@ -47,7 +55,7 @@ public class EncryptionServiceImpl implements EncryptionService {
      */
     public String encrypt(String input) {
         try {
-            String algorithm = cryptoConfig.getCryptoType();
+            String algorithm = cryptoConfig.getCryptoAlgorithmWithTransformation();
             Cipher cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.ENCRYPT_MODE, keySpec);
             byte[] encrypted = cipher.doFinal(input.getBytes(StandardCharsets.UTF_8));
@@ -66,7 +74,7 @@ public class EncryptionServiceImpl implements EncryptionService {
      */
     public String decrypt(String input) {
         try {
-            String algorithm = cryptoConfig.getCryptoType();
+            String algorithm = cryptoConfig.getCryptoAlgorithmWithTransformation();
             Cipher cipher = Cipher.getInstance(algorithm);
             cipher.init(Cipher.DECRYPT_MODE, keySpec);
             byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(input));

@@ -4,6 +4,7 @@ import com.example.bankcards.exception.InvalidRefreshTokenException;
 import com.example.bankcards.exception.ProhibitedException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.UnavailableException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.transaction.TransactionSystemException;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestCookieException;
@@ -25,6 +27,7 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 /**
@@ -106,10 +109,40 @@ public class ExceptionsHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ValidationErrorResponse(errorDetails));
     }
 
+    @ExceptionHandler(TransactionSystemException.class)
+    public ResponseEntity<?> transactionSystemException(TransactionSystemException ex) {
+        log.error("Transaction system exception: {}", ex.getMessage(), ex);
+
+        Throwable rootCause = ex.getRootCause();
+        if (rootCause instanceof ConstraintViolationException cve) {
+            List<ErrorDetail> errors = cve.getConstraintViolations().stream()
+                    .map(v -> new ErrorDetail(v.getPropertyPath().toString(), v.getMessage()))
+                    .collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ValidationErrorResponse(errors));
+        }
+
+        return internalServerError(ex);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> internalServerError(Exception e) {
         log.error("Internal Server Error: {}", e.getMessage(), e);
         return buildExceptionResponse(HttpStatus.INTERNAL_SERVER_ERROR, e);
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<?> noSuchElementException(NoSuchElementException e) {
+        log.error("Resource not found: {}", e.getMessage(), e);
+
+        String userMessage = "The requested resource was not found. Please check the ID and try again.";
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ExceptionResponse(
+                        HttpStatus.NOT_FOUND.value(),
+                        userMessage,
+                        List.of(e.getClass().getSimpleName()),
+                        LocalDateTime.now()
+                ));
     }
 
     /**

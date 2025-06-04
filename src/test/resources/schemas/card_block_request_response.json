@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BlockRequestResponse",
+  "type": "object",
+  "properties": {
+    "cardId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "CardBlockRequestId:": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": ["cardId", "CardBlockRequestId:"],
+  "additionalProperties": false
+}
