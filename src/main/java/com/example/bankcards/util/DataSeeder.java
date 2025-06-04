@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -32,6 +33,7 @@ public class DataSeeder {
     private final CardRepository cardRepository;
     private final TransferRepository transferRepository;
     private final RoleRepository roleRepository;
+    private final TransactionTemplate transactionTemplate;
 
     private final Random random = new Random();
 
@@ -43,7 +45,6 @@ public class DataSeeder {
      */
     @PostConstruct
     public void seedData() {
-
 
         if (userRepository.count() > 1) return;
         Role userRole = roleRepository.getByRole(RoleEnum.ROLE_USER)
@@ -66,7 +67,7 @@ public class DataSeeder {
                     .password("password" + i)
                     .roleSet(Set.of(userRole))
                     .build();
-            users.add(userRepository.save(user));
+            users.add(userRepository.saveAndFlush(user));
         }
 
         for (int i = 1; i <= 2; i++) {
@@ -81,7 +82,7 @@ public class DataSeeder {
                     .password("adminpassword" + i)
                     .roleSet(Set.of(adminRole))
                     .build();
-            users.add(userRepository.save(admin));
+            users.add(userRepository.saveAndFlush(admin));
         }
 
         List<Card> allCards = new ArrayList<>();
@@ -101,31 +102,57 @@ public class DataSeeder {
                         .owner(user)
                         .isDeleted(false)
                         .build();
-                allCards.add(cardRepository.save(card));
+                allCards.add(cardRepository.saveAndFlush(card));
             }
         }
 
-        for (int i = 0; i < 100; i++) {
-            Card fromCard = allCards.get(random.nextInt(allCards.size()));
-            Card toCard = allCards.get(random.nextInt(allCards.size()));
-            if (fromCard.equals(toCard)) continue;
+        List<Long> cardIds = allCards.stream()
+                .map(Card::getId)
+                .toList();
 
-            BigDecimal amount = BigDecimal.valueOf(random.nextInt(5000) + 1);
-            if (fromCard.getBalance().compareTo(amount) < 0) continue;
+        int transfersCreated = 0;
+        int attempts = 0;
+        int maxAttempts = 300;
 
-            fromCard.setBalance(fromCard.getBalance().subtract(amount));
-            toCard.setBalance(toCard.getBalance().add(amount));
-            cardRepository.save(fromCard);
-            cardRepository.save(toCard);
+        while (transfersCreated < 100 && attempts++ < maxAttempts) {
+            boolean success = Boolean.TRUE.equals(transactionTemplate.execute(status -> {
+                Long fromCardId = cardIds.get(random.nextInt(cardIds.size()));
+                Long toCardId = cardIds.get(random.nextInt(cardIds.size()));
 
-            Transfer transfer = Transfer.builder()
-                    .fromCard(fromCard)
-                    .toCard(toCard)
-                    .amount(amount)
-                    .status(random.nextBoolean() ? TransferStatus.PENDING : TransferStatus.COMPLETED)
-                    .createdAt(LocalDateTime.now().minusDays(random.nextInt(60)))
-                    .build();
-            transferRepository.save(transfer);
+                if (fromCardId.equals(toCardId)) return false;
+
+                Card fromCard = cardRepository.findById(fromCardId).orElse(null);
+                Card toCard = cardRepository.findById(toCardId).orElse(null);
+
+                if (fromCard == null || toCard == null) return false;
+
+                BigDecimal amount = BigDecimal.valueOf(random.nextInt(5000) + 1);
+
+                if (fromCard.getBalance().compareTo(amount) < 0) return false;
+
+                fromCard.setBalance(fromCard.getBalance().subtract(amount));
+                toCard.setBalance(toCard.getBalance().add(amount));
+
+                cardRepository.save(fromCard);
+                cardRepository.save(toCard);
+
+                Transfer transfer = Transfer.builder()
+                        .fromCard(fromCard)
+                        .toCard(toCard)
+                        .amount(amount)
+                        .status(random.nextBoolean() ? TransferStatus.PENDING : TransferStatus.COMPLETED)
+                        .createdAt(LocalDateTime.now().minusDays(random.nextInt(60)))
+                        .build();
+                transferRepository.save(transfer);
+
+                return true;
+            }));
+
+            if (success) transfersCreated++;
+        }
+
+        if (transfersCreated < 100) {
+            log.warn("Created only {} transfers out of 100", transfersCreated);
         }
 
         log.info("Test data generated.");
@@ -148,19 +175,15 @@ public class DataSeeder {
         int typeIndex = random.nextInt(CardType.values().length);
         CardType type = CardType.values()[typeIndex];
 
-        switch (type) {
-            case VISA:
-                return "4" + generateDigits(12 + random.nextInt(4)); // 13–16 digits
-            case MASTERCARD:
-                return "5" + (1 + random.nextInt(5)) + generateDigits(14);
-            case AMERICAN_EXPRESS:
-                return "3" + (random.nextBoolean() ? "4" : "7") + generateDigits(13);
-            case BANK_SPECIFIC:
+        return switch (type) {
+            case VISA -> "4" + generateDigits(12 + random.nextInt(4));
+            case MASTERCARD -> "5" + (1 + random.nextInt(5)) + generateDigits(14);
+            case AMERICAN_EXPRESS -> "3" + (random.nextBoolean() ? "4" : "7") + generateDigits(13);
+            case BANK_SPECIFIC -> {
                 String prefix = List.of("2200", "2201", "2202").get(random.nextInt(3));
-                return prefix + generateDigits(12); // total 16 digits
-            default:
-                throw new IllegalStateException("Unexpected card type");
-        }
+                yield prefix + generateDigits(12);
+            }
+        };
     }
 
     /**

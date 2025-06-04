@@ -36,7 +36,7 @@ public enum CardType {
     /**
      * Represents a card type starting with '2200', '2201', or '2202'.
      */
-    BANK_SPECIFIC(4, "Bank Specific", "220220", "2200|2201|2202");
+    BANK_SPECIFIC(4, "Bank Specific", "220220", "220[0-2][0-9]{12}");
 
     public static final String MASKED_CARD_PATTERN = "^(\\*{4} ?)*\\d{4}$";
     public static final int DIGIT_IN_ONE_SECTION = 4;
@@ -66,7 +66,7 @@ public enum CardType {
      * The pattern combines individual card type regex patterns and can be used for validation purposes.
      * </p>
      */
-    public static final String CARD_NUMBER_REGEX = "^(2200|2201|2202|4[0-9]{12,15}|5[1-5][0-9]{14}|3[47][0-9]{13})[0-9]{13,16}$";
+    public static final String CARD_NUMBER_REGEX = "^(220[0-2][0-9]{12}|4[0-9]{12,15}|5[1-5][0-9]{14}|3[47][0-9]{13})$";
 
     /**
      * Gets the minimum code value for the card types.

@@ -2,6 +2,7 @@ package com.example.bankcards.service.impl;
 
 import com.example.bankcards.config.app.AppConf;
 import com.example.bankcards.config.app.DenyCancelTransfer;
+import com.example.bankcards.dto.api.crypto.EncryptedCardNumber;
 import com.example.bankcards.dto.api.req.MoneyTransferReqDTO;
 import com.example.bankcards.dto.mappers.TransferMapper;
 import com.example.bankcards.dto.redis.TransferMessageDTO;
@@ -17,7 +18,6 @@ import com.example.bankcards.exception.ProhibitedException;
 import com.example.bankcards.repository.BackupAccountRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.TransferRepository;
-import com.example.bankcards.service.EncryptionService;
 import com.example.bankcards.service.TransferService;
 import com.example.bankcards.util.PrincipalExtractor;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
-import org.springframework.security.web.authentication.preauth.PreAuthenticatedCredentialsNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -86,12 +85,6 @@ public class TransferServiceImpl implements TransferService {
      * @see TransferMapper
      */
     private final TransferMapper transferMapper;
-    /**
-     * The EncryptionService bean
-     *
-     * @see EncryptionService
-     */
-    private final EncryptionService encryptionService;
 
     /**
      * Creates a new transfer request.
@@ -106,17 +99,25 @@ public class TransferServiceImpl implements TransferService {
 
         if (Objects.isNull(currentUser)) {
             log.error("Unauthorized access attempt. No current user found.");
-            throw new PreAuthenticatedCredentialsNotFoundException("Unauthorized access");
+            throw new ProhibitedException("Unauthorized access");
         }
 
-        String fromCardNumber = transferReqDTO.getFromCardNumber().encrypted();
-        String toCardNumber = transferReqDTO.getToCardNumber().encrypted();
+        Long fromCardId = transferReqDTO.getFromCardId();
+        Long toCardId = transferReqDTO.getToCardId();
 
-        Long fromCardId = Objects.requireNonNullElseGet(transferReqDTO.getFromCardId(),
-                () -> cardRepository.findIdByEncryptedCardNumber(fromCardNumber).orElseThrow());
+        EncryptedCardNumber fromCardNumber = transferReqDTO.getFromCardNumber();
+        EncryptedCardNumber toCardNumber = transferReqDTO.getToCardNumber();
 
-        Long toCardId = Objects.requireNonNullElseGet(transferReqDTO.getToCardId(),
-                () -> cardRepository.findIdByEncryptedCardNumber(toCardNumber).orElseThrow());;
+        if ((Objects.isNull(fromCardId) && Objects.isNull(fromCardNumber)) ||
+                (Objects.isNull(toCardId) && Objects.isNull(toCardNumber))) {
+            throw  new IllegalArgumentException("Invalid request id oe card number must be specified for both of card!");
+        }
+
+        fromCardId = Objects.requireNonNullElseGet(transferReqDTO.getFromCardId(),
+                () -> cardRepository.findIdByEncryptedCardNumber(fromCardNumber.encrypted()).orElseThrow());
+
+        toCardId = Objects.requireNonNullElseGet(transferReqDTO.getToCardId(),
+                () -> cardRepository.findIdByEncryptedCardNumber(toCardNumber.encrypted()).orElseThrow());
 
         Long currentUserId = currentUser.getId();
         Long fromCardOwnerId = cardRepository.getOwnerIdById(fromCardId).orElseThrow();
@@ -153,7 +154,7 @@ public class TransferServiceImpl implements TransferService {
             throw new ProhibitedException("The specified recipient card does not exist!. Card id: " + toCardOpt);
         }
 
-        Card toCard = fromCardOpt.get();
+        Card toCard = toCardOpt.get();
         Long toCardOwnerId = toCard.getOwner().getId();
 
         checkIfTransferAvailableForYourselfOnly(fromCardOwnerId, toCardOwnerId, fromCardId, toCardId);

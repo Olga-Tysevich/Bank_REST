@@ -42,16 +42,16 @@ public class WebSecurityConfig {
 
     private final UserDetailsService userDetailsService;
 
-    @Value("${spring.app.web.allowedSources:*}")
+    @Value("${spring.application.web.allowedSources:*}")
     private List<String> allowedSources;
 
-    @Value("${spring.app.web.allowedMethods:*}")
+    @Value("${spring.application.web.allowedMethods:*}")
     private List<String> allowedMethods;
 
-    @Value("${spring.app.web.allowedHeaders:*}")
+    @Value("${spring.application.web.allowedHeaders:*}")
     private List<String> allowedHeaders;
 
-    @Value("${spring.app.web.ignoredUrls:*}")
+    @Value("${spring.application.web.ignoredUrls:*}")
     private List<String> ignoredUrls;
 
     /**
@@ -78,6 +78,10 @@ public class WebSecurityConfig {
                 }))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(ignoredUrls.toArray(new String[0])).permitAll()
+
+                        .requestMatchers("/v1/api/card/add", "/v1/api/card/admin/update", "/v1/api/card/admin/{id}/{status}/update", "/v1/api/card/admin/{id}/delete").hasRole("ADMIN")
+                        .requestMatchers("/v1/api/card/get/**", "/v1/api/card/block").hasRole("USER")
+                        .requestMatchers("/v1/api/auth/login", "/v1/api/auth/refresh").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())

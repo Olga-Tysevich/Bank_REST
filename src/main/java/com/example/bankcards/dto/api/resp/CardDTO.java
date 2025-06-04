@@ -2,7 +2,6 @@ package com.example.bankcards.dto.api.resp;
 
 import com.example.bankcards.entity.enums.CardStatus;
 import com.example.bankcards.entity.enums.CardType;
-import com.example.bankcards.util.validators.MinBalance;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -46,7 +45,6 @@ public class CardDTO {
     private CardStatus status;
 
     @NotNull(message = BALANCE_CANNOT_BE_NULL)
-    @MinBalance
     private BigDecimal balance;
 
     @NotNull(message = HOLD_CANNOT_BE_NULL)
