@@ -8,12 +8,11 @@
 * **Spring Boot 3.4.5**
 * **PostgreSQL**
 * **Redis**
-* **Elasticsearch**
 * **JWT для аутентификации**
 * **Liquibase для миграций базы данных**
 * **Spring Security**
 * **MapStruct для маппинга DTO**
-* **Docker для окружений разработки**
+* **Docker**
 * **Swagger для документации API**
 
 ## Как запустить проект
@@ -52,7 +51,7 @@ REDIS_PORT=6379
 1. Для запуска приложения, PostgreSQL, Redis выполните команду:
 
 *аплик без докер-контейнера:*
-- Установить св-во IS_DOCKERIZED в env в true, апустить контейнеры БД и редис, запустить приложение любым удобным способом
+- Установить св-во IS_DOCKERIZED в env в false, запустить контейнеры БД и редис, запустить приложение любым удобным способом
 ```bash
 
 docker-compose up --build bank_rest_db bank-rest-redis
@@ -60,7 +59,7 @@ docker-compose up --build bank_rest_db bank-rest-redis
 ```
 
 *либо аплик с докер-контейнером:*
-- Установить св-во IS_DOCKERIZED в env в false
+- Установить св-во IS_DOCKERIZED в env в true
 ```bash
 
 docker-compose up --build
