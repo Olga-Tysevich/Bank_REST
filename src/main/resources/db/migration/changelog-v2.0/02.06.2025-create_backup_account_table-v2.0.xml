@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <changeSet id="1" author="Tysevich Olga">
+        <createTable tableName="backup_accounts">
+
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="source_of_funds" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="sender_data" type="jsonb"/>
+
+            <column name="owner_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="amount" type="DECIMAL(19, 2)">
+                <constraints nullable="false"/>
+            </column>
+
+        </createTable>
+
+        <createSequence
+                sequenceName="backup_account_id_seq"
+                incrementBy="1"
+                startValue="1"/>
+
+        <addForeignKeyConstraint constraintName="fk_card_user"
+                                 baseTableName="backup_accounts" baseColumnNames="owner_id"
+                                 referencedTableName="users" referencedColumnNames="id"/>
+    </changeSet>
+
+
+</databaseChangeLog>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.25.xsd">
+
+    <changeSet id="create-card-block-requests-table" author="Tysevich Olga">
+        <createTable tableName="card_block_requests">
+            <column name="id" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="updated_at" type="timestamp">
+            </column>
+
+            <column name="from_user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="appointed_admin_id" type="BIGINT">
+            </column>
+
+            <column name="note" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="from_card_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="is_confirmed" type="BOOLEAN" defaultValueBoolean="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addForeignKeyConstraint
+                baseTableName="card_block_requests"
+                baseColumnNames="from_user_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_cardblock_from_user"/>
+
+        <addForeignKeyConstraint
+                baseTableName="card_block_requests"
+                baseColumnNames="appointed_admin_id"
+                referencedTableName="users"
+                referencedColumnNames="id"
+                constraintName="fk_cardblock_appointed_admin"/>
+
+        <addForeignKeyConstraint
+                baseTableName="card_block_requests"
+                baseColumnNames="from_card_id"
+                referencedTableName="cards"
+                referencedColumnNames="id"
+                constraintName="fk_cardblock_from_card"/>
+
+        <createSequence sequenceName="admin_notification_id_seq" startValue="1" incrementBy="1"/>
+    </changeSet>
+
+</databaseChangeLog>

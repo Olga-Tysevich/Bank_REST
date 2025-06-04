@@ -10,25 +10,22 @@ spring:
           secret: ${JWT_REFRESH_KEY_SECRET}
           expiration-time: ${JWT_REFRESH_KEY_EXPIRATION_TIME}
       crypto:
-        algorithm: ${CRYPTO_ALGORITHM}
+        type: ${CRYPTO_TYPE}
         transformation: ${CRYPTO_TRANSFORMATION}
         key: ${CRYPTO_SECRET_KEY}
     card:
       expiration:
         years: 3
       balance:
-        min: ${MIN_CARD_BALANCE}
+        min: -10
       transfer:
-        betweenCards:
-          permissions:
-            onlyYourself: true
+        permissions:
+          yourselfOnly: true
     web:
       allowedSources: ${BANK_REST_WEB_ALLOWED_SOURCES}
       allowedMethods: ${BANK_REST_WEB_ALLOWED_METHODS}
       allowedHeaders: ${BANK_REST_WEB_ALLOWED_HEADERS}
       ignoredUrls: ${BANK_REST_WEB_IGNORED_URLS}
-  profiles:
-    active: dev
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -53,7 +50,7 @@ spring:
     enabled: true
     password: ${BANK_REST_DB_PASSWORD}
     user: ${BANK_REST_DB_USER}
-    change-log: classpath:/db/migration/changelog-master.xml
+    change-log: classpath:db/migration/test-changelog-master.xml
   data:
     redis:
       host: ${REDIS_HOST}

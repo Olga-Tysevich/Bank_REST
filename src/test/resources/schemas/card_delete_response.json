@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DeleteCardResponse",
+  "type": "object",
+  "properties": {
+    "deleted": {
+      "type": "boolean",
+      "const": true
+    },
+    "cardId": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": ["deleted", "cardId"],
+  "additionalProperties": false
+}

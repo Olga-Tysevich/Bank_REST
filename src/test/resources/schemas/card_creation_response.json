@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AddCardResponse",
+  "type": "object",
+  "properties": {
+    "userId": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "accountId": {
+      "type": "integer",
+      "minimum": 1
+    }
+  },
+  "required": ["userId", "accountId"],
+  "additionalProperties": false
+}
