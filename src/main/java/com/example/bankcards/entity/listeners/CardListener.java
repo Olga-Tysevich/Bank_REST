@@ -129,7 +129,7 @@ public class CardListener {
         switch (type) {
             case BANK_SPECIFIC:
                 if (!number.matches("^2200\\d{12}$")) {
-                    throw new IllegalArgumentException("MIR cards must start with 2200 and have 16 digits");
+                    throw new IllegalArgumentException("Bank cards must start with 2200 and have 16 digits");
                 }
                 break;
 

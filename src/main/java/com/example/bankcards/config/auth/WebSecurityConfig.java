@@ -78,7 +78,6 @@ public class WebSecurityConfig {
                 }))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(ignoredUrls.toArray(new String[0])).permitAll()
-
                         .requestMatchers("/v1/api/card/add", "/v1/api/card/admin/update", "/v1/api/card/admin/{id}/{status}/update", "/v1/api/card/admin/{id}/delete").hasRole("ADMIN")
                         .requestMatchers("/v1/api/card/get/**", "/v1/api/card/block").hasRole("USER")
                         .requestMatchers("/v1/api/auth/login", "/v1/api/auth/refresh").permitAll()

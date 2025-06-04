@@ -176,13 +176,10 @@ public class DataSeeder {
         CardType type = CardType.values()[typeIndex];
 
         return switch (type) {
-            case VISA -> "4" + generateDigits(12 + random.nextInt(4));
-            case MASTERCARD -> "5" + (1 + random.nextInt(5)) + generateDigits(14);
-            case AMERICAN_EXPRESS -> "3" + (random.nextBoolean() ? "4" : "7") + generateDigits(13);
-            case BANK_SPECIFIC -> {
-                String prefix = List.of("2200", "2201", "2202").get(random.nextInt(3));
-                yield prefix + generateDigits(12);
-            }
+            case VISA -> "4" + generateDigits(15); // 1 + 15 = 16 цифр
+            case MASTERCARD -> "5" + (1 + random.nextInt(5)) + generateDigits(14); // 2 + 14 = 16 цифр
+            case AMERICAN_EXPRESS -> "3" + (random.nextBoolean() ? "4" : "7") + generateDigits(13); // 2 + 13 = 15 цифр
+            case BANK_SPECIFIC -> "2200" + generateDigits(12); // 4 + 12 = 16 цифр (только 2200)
         };
     }
 
