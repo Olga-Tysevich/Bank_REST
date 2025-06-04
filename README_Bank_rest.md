@@ -1,6 +1,6 @@
 # Разработка Системы Управления Банковскими Картами
 
-Полное техническое задание на проект можно найти по [ссылке на ТЗ](https://github.com/Olga-Tysevich/Bank_RESTBank_REST/blob/main/README.md).
+Полное техническое задание на проект можно найти по [ссылке на ТЗ]([https://github.com/Olga-Tysevich/Bank_RESTBank_REST/blob/main/README.md](https://github.com/Olga-Tysevich/Bank_REST/blob/dev/README.md)).
 
 ## Стартовая структура
 
