@@ -1,7 +1,6 @@
 package com.example.bankcards.exception;
 
 
-import static com.example.bankcards.util.Constants.ACTION_IS_PROHIBITED;
 import static com.example.bankcards.util.Constants.USER_NOT_FOUND;
 
 /**

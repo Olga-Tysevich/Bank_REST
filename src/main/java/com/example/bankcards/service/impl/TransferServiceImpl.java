@@ -96,11 +96,7 @@ public class TransferServiceImpl implements TransferService {
     @Override
     public Long createTransferRequest(@NotNull MoneyTransferReqDTO transferReqDTO) {
         User currentUser = PrincipalExtractor.getCurrentUser();
-
-        if (Objects.isNull(currentUser)) {
-            log.error("Unauthorized access attempt. No current user found.");
-            throw new ProhibitedException("Unauthorized access");
-        }
+        PrincipalExtractor.checkCurrentUser();
 
         Long fromCardId = transferReqDTO.getFromCardId();
         Long toCardId = transferReqDTO.getToCardId();
@@ -110,7 +106,7 @@ public class TransferServiceImpl implements TransferService {
 
         if ((Objects.isNull(fromCardId) && Objects.isNull(fromCardNumber)) ||
                 (Objects.isNull(toCardId) && Objects.isNull(toCardNumber))) {
-            throw  new IllegalArgumentException("Invalid request id oe card number must be specified for both of card!");
+            throw new IllegalArgumentException("Invalid request id oe card number must be specified for both of card!");
         }
 
         fromCardId = Objects.requireNonNullElseGet(transferReqDTO.getFromCardId(),

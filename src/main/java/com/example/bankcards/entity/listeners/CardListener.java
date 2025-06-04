@@ -64,12 +64,15 @@ public class CardListener {
     @PrePersist
     @PreUpdate
     public void beforeSaveOrUpdate(Card card) {
-        if (card.getNumber() == null || (!card.getNumber().startsWith("ENC:")
-                && !card.getNumber().matches(CardType.CARD_NUMBER_REGEX))) {
-            throw new IllegalArgumentException("The card number must be in the format for the Russian Federation or the Republic of Belarus (for example, 2200xxxxxxxxxxxx).");
-        } else if (!card.getNumber().startsWith("ENC:")) {
+        if (card.getNumber() == null) {
+            throw new IllegalArgumentException("Card number cannot be null");
+        }
+
+        if (!card.getNumber().startsWith("ENC:")) {
+            validateCardNumber(card);
             encryptNumber(card);
         }
+
         balanceValidator.validate(card);
     }
 
@@ -95,6 +98,63 @@ public class CardListener {
     private void encryptNumber(Card card) {
         if (card.getNumber() != null) {
             card.setNumber("ENC:" + encryptionService.encrypt(card.getNumber()));
+        }
+    }
+
+    /**
+     * Validates the card number based on the card type.
+     * This method checks whether the card number conforms to the expected format for the provided card type.
+     * The validation includes length checks and prefix rules for different card types.
+     *
+     * @param card The card object containing the card type and card number to validate.
+     * @throws IllegalArgumentException If the card type is null or if the card number does not match the expected pattern for the given card type.
+     *                                 <ul>
+     *                                     <li>For BANK_SPECIFIC type, the number must start with 2200 and have 16 digits.</li>
+     *                                     <li>For VISA type, the number must start with 4 and have 16 digits.</li>
+     *                                     <li>For MASTERCARD type, the number must start with 51-55 and have 16 digits.</li>
+     *                                     <li>For AMERICAN_EXPRESS type, the number must start with 34 or 37 and have 15 digits.</li>
+     *                                     <li>For other types, the number must be between 15 and 19 digits long.</li>
+     *                                 </ul>
+     *
+     * @throws IllegalArgumentException If the card number does not match the expected pattern for the card type.
+     */
+    private void validateCardNumber(Card card) {
+        CardType type = card.getType();
+        String number = card.getNumber();
+
+        if (type == null) {
+            throw new IllegalArgumentException("Card type is required when number is provided");
+        }
+
+        switch (type) {
+            case BANK_SPECIFIC:
+                if (!number.matches("^2200\\d{12}$")) {
+                    throw new IllegalArgumentException("MIR cards must start with 2200 and have 16 digits");
+                }
+                break;
+
+            case VISA:
+                if (!number.matches("^4\\d{15}$")) {
+                    throw new IllegalArgumentException("VISA cards must start with 4 and have 16 digits");
+                }
+                break;
+
+            case MASTERCARD:
+                if (!number.matches("^5[1-5]\\d{14}$")) {
+                    throw new IllegalArgumentException("MasterCard must start with 51-55 and have 16 digits");
+                }
+                break;
+
+            case AMERICAN_EXPRESS:
+                if (!number.matches("^3[47]\\d{13}$")) {
+                    throw new IllegalArgumentException("American Express cards must start with 34 or 37 and have 15 digits");
+                }
+                break;
+
+            default:
+                if (!number.matches("^\\d{15,19}$")) {
+                    throw new IllegalArgumentException("Card number must be 15 to 19 digits");
+                }
         }
     }
 

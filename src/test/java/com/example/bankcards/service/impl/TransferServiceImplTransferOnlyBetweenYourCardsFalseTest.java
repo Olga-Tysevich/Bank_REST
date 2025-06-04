@@ -14,8 +14,7 @@ import org.springframework.test.context.TestPropertySource;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.example.bankcards.utils.TestConstants.ADMIN_RAW_PASSWORD;
-import static com.example.bankcards.utils.TestConstants.ADMIN_USERNAME;
+import static com.example.bankcards.utils.TestConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @TestPropertySource(properties = {
@@ -38,8 +37,8 @@ class TransferServiceImplTransferOnlyBetweenYourCardsFalseTest extends BaseTest 
 
         super.setAuthentication(ADMIN_USERNAME, ADMIN_RAW_PASSWORD);
 
-        Card senderCard = cardRepository.findById(1L).orElseThrow();
-        Card recipientCard = cardRepository.findById(3L).orElseThrow();
+        Card senderCard = cardRepository.findById(VISA_CARD_ID_OWNER_ADMIN).orElseThrow();
+        Card recipientCard = cardRepository.findById(AMEX_CARD_ID_OWNER_REGULAR).orElseThrow();
 
         assertThat(senderCard.getOwner().getId())
                 .isNotEqualTo(recipientCard.getOwner().getId());

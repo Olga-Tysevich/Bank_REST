@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CardDTO",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": ["integer", "null"]
+    },
+    "cardTypeCode": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "numberMask": {
+      "type": "string",
+      "pattern": "^(\\*{4} ?)*\\d{4}$"
+    },
+    "expiration": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ACTIVE", "INACTIVE", "BLOCKED", "EXPIRED"]
+    },
+    "balance": {
+      "type": "number"
+    },
+    "hold": {
+      "type": "number",
+      "minimum": 0
+    },
+    "ownerId": {
+      "type": "integer"
+    }
+  },
+  "required": [
+    "cardTypeCode",
+    "numberMask",
+    "expiration",
+    "status",
+    "balance",
+    "hold",
+    "ownerId"
+  ],
+  "additionalProperties": false
+}

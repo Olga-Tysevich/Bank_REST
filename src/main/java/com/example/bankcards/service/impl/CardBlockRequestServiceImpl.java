@@ -12,7 +12,6 @@ import com.example.bankcards.repository.CardBlockRequestRepository;
 import com.example.bankcards.repository.CardRepository;
 import com.example.bankcards.repository.UserRepository;
 import com.example.bankcards.service.CardBlockRequestService;
-import com.example.bankcards.service.CardService;
 import com.example.bankcards.util.PrincipalExtractor;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,6 @@ public class CardBlockRequestServiceImpl implements CardBlockRequestService {
     private final CardBlockRequestRepository cardBlockRequestRepository;
     private final UserRepository userRepository;
     private final CardRepository cardRepository;
-    private final CardService cardService;
     /**
      * The ApplicationEventPublisher bean
      *
@@ -70,6 +68,7 @@ public class CardBlockRequestServiceImpl implements CardBlockRequestService {
         Long cardId = cardBlockRequestNotificationDTO.getCardId();
 
         Card card = cardRepository.findById(cardId).orElseThrow();
+
         Long ownerId = card.getOwner().getId();
 
         if (currentUserId == null || !currentUserId.equals(ownerId)) {
@@ -78,15 +77,15 @@ public class CardBlockRequestServiceImpl implements CardBlockRequestService {
 
         String note = Objects.requireNonNullElse(cardBlockRequestNotificationDTO.getNote(), "");
 
+
         CardBlockRequest cardBlockRequest = CardBlockRequest.builder()
                 .fromUser(user)
                 .note(note)
                 .card(card)
                 .build();
-
         cardBlockRequestRepository.save(cardBlockRequest);
         // Логика тут должна зависеть от требований, для примера просто ставим статус "Заблокировано"
-        cardService.setCardStatus(cardId, CardStatus.BLOCKED);
+        card.setStatus(CardStatus.BLOCKED);
 
         CardBlockRequestCreatedMessageDTO messageDTO = CardBlockRequestCreatedMessageDTO.builder()
                 .id(cardBlockRequest.getId())

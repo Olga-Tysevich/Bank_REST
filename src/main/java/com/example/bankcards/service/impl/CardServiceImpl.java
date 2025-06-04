@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Optional;
@@ -88,6 +87,7 @@ public class CardServiceImpl implements CardService {
      * @return The ID of the newly created card.
      * @throws UserNotFoundException If the user (owner) is not found.
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     @Override
     public Long createCard(AddCardDTO request) {
 
@@ -101,9 +101,8 @@ public class CardServiceImpl implements CardService {
 
         Optional<Card> lastCardOpt = cardRepository.findLastByCardType(ownerId, cardType);
         String lastCardNumber = lastCardOpt.map(Card::getNumber).orElse(null);
-        String decodeLastNumber = encryptionService.decrypt(lastCardNumber);
 
-        String newCardNumber = CardNumberGenerator.generate(cardType, ownerId, decodeLastNumber);
+        String newCardNumber = CardNumberGenerator.generate(cardType, ownerId, lastCardNumber);
         LocalDate expiration = LocalDate.now().plusYears(appConf.getCardExpirationYears());
 
         Card card = Card.builder()
@@ -331,72 +330,140 @@ public class CardServiceImpl implements CardService {
     }
 
     /**
-     * A utility class for generating card numbers based on card type, owner ID, and last card number.
+     * A utility class responsible for generating card numbers based on card type, owner ID, and the last issued card number.
+     * The generated card number adheres to the Luhn algorithm and follows the card type's prefix and length requirements.
+     *
+     * <p>The card number generation process involves the following steps:
+     * <ul>
+     *   <li>Building the base number using the card type prefix, owner ID, and sequence number.</li>
+     *   <li>Validating the length of the base number to ensure it matches the required card type length.</li>
+     *   <li>Calculating the Luhn check digit and appending it to the base number.</li>
+     * </ul>
+     *
+     * <p>The class ensures that no more than the allowed maximum number of cards can be generated for a particular owner.
+     * If the card number exceeds the maximum sequence, an exception will be thrown.
      */
     private static class CardNumberGenerator {
-        private static final int MAX_CARD_NUMBER_LENGTH = 15;
+
+        /** The length of the owner ID part in the generated card number. */
+        private static final int OWNER_ID_LENGTH = 6;
+
+        /** The length of the sequence part in the generated card number. */
+        private static final int SEQUENCE_LENGTH = 3;
+
+        /** The maximum allowed sequence number for a card number. */
+        private static final int MAX_SEQUENCE = 999;
 
         /**
-         * Generates a new card number based on the specified parameters.
+         * Generates a new card number for a given card type, owner ID, and the last issued card number.
          *
-         * @param type       The type of the card (e.g., VISA, MASTERCARD).
-         * @param ownerId    The ID of the card owner.
-         * @param lastNumber The last card number to generate the new one from (may be null).
-         * @return The newly generated card number.
-         * @throws IllegalStateException If the generated card number exceeds the maximum allowed length.
+         * <p>The generated card number consists of a prefix based on the card type, followed by a formatted owner ID,
+         * a sequence number, and a Luhn check digit at the end.
+         *
+         * @param type The type of card for which the number is being generated (e.g., VISA, MasterCard).
+         * @param ownerId The unique ID of the card owner.
+         * @param lastNumber The last issued card number for the owner (if available) to continue the sequence.
+         *
+         * @return The generated card number, which is a valid number conforming to the Luhn algorithm and card type rules.
+         * @throws IllegalStateException If the maximum sequence is reached for the owner or if any error occurs in generating the card number.
          */
-        public static String generate(CardType type, Long ownerId, String lastNumber) {
-            String bin = getBinPrefix(type);
-            String base;
+        public static String generate(@NotNull CardType type, @NotNull Long ownerId, @NotNull String lastNumber) {
+            String prefix = type.getPrefix();
+            int totalLength = type.getLength();
 
-            if (lastNumber == null) {
-                base = bin + String.format("%06d", ownerId) + "000";
-            } else {
-                String numericPart = lastNumber.substring(0, lastNumber.length() - 1);
+            String base = buildBaseNumber(prefix, ownerId, lastNumber, totalLength);
 
-                BigInteger nextNum = new BigInteger(numericPart).add(BigInteger.ONE);
-                base = String.format("%015d", nextNum);
-
-                if (base.length() != MAX_CARD_NUMBER_LENGTH) {
-                    throw new IllegalStateException("Card number overflow");
-                }
-            }
             return base + calculateLuhnCheckDigit(base);
         }
 
         /**
-         * Gets the BIN prefix based on the card type.
+         * Builds the base card number, excluding the Luhn check digit, based on the given parameters.
          *
-         * @param type The type of the card (e.g., VISA, MASTERCARD).
-         * @return The corresponding BIN prefix.
-         * @see CardType
+         * @param prefix The prefix associated with the card type.
+         * @param ownerId The unique ID of the card owner.
+         * @param lastNumber The last issued card number for the owner to continue the sequence.
+         * @param totalLength The expected total length of the card number (including the check digit).
+         *
+         * @return The base card number, which includes the prefix, owner ID, and sequence number, but excludes the check digit.
+         * @throws IllegalStateException If the sequence exceeds the maximum allowed or if the base number length is invalid.
          */
-        private static String getBinPrefix(CardType type) {
-            return switch (type) {
-                case VISA -> CardType.VISA.getPrefix();
-                case MASTERCARD -> CardType.MASTERCARD.getPrefix();
-                case AMERICAN_EXPRESS -> CardType.AMERICAN_EXPRESS.getPrefix();
-                case BANK_SPECIFIC -> CardType.BANK_SPECIFIC.getPrefix();
-            };
+        private static String buildBaseNumber(String prefix, Long ownerId, String lastNumber, int totalLength) {
+            String ownerIdPart = formatOwnerId(ownerId);
+            int sequence = 0;
+
+            if (lastNumber != null && lastNumber.startsWith(prefix)) {
+                sequence = extractSequence(lastNumber, prefix, ownerIdPart) + 1;
+            }
+
+            if (sequence > MAX_SEQUENCE) {
+                throw new IllegalStateException("Max card sequence reached for owner: " + ownerId);
+            }
+
+            String sequencePart = String.format("%0" + SEQUENCE_LENGTH + "d", sequence);
+            String base = prefix + ownerIdPart + sequencePart;
+
+            validateLength(base, totalLength);
+            return base;
         }
 
         /**
-         * How it works:
-         * 1. Take all the digits from right to left, but not including the last one (this is the one we want to calculate).
-         * 2. Double every second digit (n *= 2).
-         * 3. If it turns out to be more than 9, subtract 9 (if (n > 9) n -= 9;), i.e. equivalent to the sum of the digits.
-         * 4. Add up all the resulting numbers.
-         * 5. Check digit = (10 - (sum % 10)) % 10.
-         * This works because the sum of all digits, including the check digit, must be a multiple of 10.
-         * <p>
-         * Example:
-         * Base number (without last digit): 4111 1111 1111 111_
-         * Algorithm pass → sum = 30
-         * Check digit = (10 - (30 % 10)) % 10 = 0
-         * Total: 41111111111111110
+         * Formats the owner ID to ensure it is always 6 digits long.
          *
-         * @param numberWithoutCheckDigit the last card number in decoded form
-         * @return a new card number as int
+         * @param ownerId The unique ID of the card owner.
+         * @return A string representation of the owner ID, formatted to 6 digits.
+         */
+        private static String formatOwnerId(Long ownerId) {
+            String idString = ownerId.toString();
+            String trimmed = idString.substring(Math.max(0, idString.length() - OWNER_ID_LENGTH));
+            return String.format("%0" + OWNER_ID_LENGTH + "d", Long.parseLong(trimmed));
+        }
+
+        /**
+         * Extracts the sequence part from the last issued card number to determine the next sequence number.
+         *
+         * @param lastNumber The last issued card number.
+         * @param prefix The prefix associated with the card type.
+         * @param ownerIdPart The formatted owner ID.
+         * @return The extracted sequence number, or 0 if the sequence cannot be extracted.
+         */
+        private static int extractSequence(String lastNumber, String prefix, String ownerIdPart) {
+            try {
+                int ownerIdStart = prefix.length();
+                int ownerIdEnd = ownerIdStart + OWNER_ID_LENGTH;
+
+                if (!lastNumber.substring(ownerIdStart, ownerIdEnd).equals(ownerIdPart)) {
+                    return 0;
+                }
+
+                String sequencePart = lastNumber.substring(ownerIdEnd, ownerIdEnd + SEQUENCE_LENGTH);
+                return Integer.parseInt(sequencePart);
+            } catch (Exception e) {
+                log.warn("Error extracting sequence from: {}", lastNumber);
+                return 0;
+            }
+        }
+
+        /**
+         * Validates that the length of the base card number is correct according to the specified total length.
+         *
+         * @param base The base card number to validate.
+         * @param totalLength The total length the card number should have, including the check digit.
+         * @throws IllegalStateException If the base number length does not match the expected total length minus 1.
+         */
+        private static void validateLength(String base, int totalLength) {
+            if (base.length() != totalLength - 1) {
+                throw new IllegalStateException(
+                        "Invalid base length: " + base.length() +
+                                " for required total: " + totalLength
+                );
+            }
+        }
+
+        /**
+         * Calculates the Luhn check digit for a given card number, excluding the check digit itself.
+         *
+         * @param numberWithoutCheckDigit The card number excluding the check digit.
+         * @return The calculated Luhn check digit.
          */
         public static int calculateLuhnCheckDigit(String numberWithoutCheckDigit) {
             int sum = 0;

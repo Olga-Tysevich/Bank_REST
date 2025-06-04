@@ -1,10 +1,13 @@
 package com.example.bankcards.utils;
 
+import com.example.bankcards.dto.api.req.EnrollDTO;
+import com.example.bankcards.dto.api.req.UpdateCardDTO;
 import com.example.bankcards.entity.*;
 import com.example.bankcards.entity.enums.*;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
@@ -14,6 +17,34 @@ import static com.example.bankcards.utils.TestConstants.*;
 @UtilityClass
 public class ObjectBuilder {
 
+    public UpdateCardDTO buildUpdateCardDTOWithRegularAmex() {
+        return UpdateCardDTO.builder()
+                .cardId(AMEX_CARD_ID_OWNER_REGULAR)
+                .enrollment(buildEnrollDTO())
+                .build();
+    }
+
+    public EnrollDTO buildEnrollDTO() {
+        return EnrollDTO.builder()
+                .cardId(AMEX_CARD_ID_OWNER_REGULAR)
+                .senderType(SenderType.INDIVIDUAL)
+                .sourceOfFunds(SourceOfFunds.CASH_CONTRIBUTED_BY_INDIVIDUAL)
+                .enrollmentInformation(buildSenderData())
+                .amount(new BigDecimal("100.00"))
+                .build();
+    }
+
+    public Map<SourceOfFunds.SenderDataKey, String> buildSenderData() {
+        Map<SourceOfFunds.SenderDataKey, String> senderData = new EnumMap<>(SourceOfFunds.SenderDataKey.class);
+        senderData.put(SourceOfFunds.SenderDataKey.FULL_NAME, SENDER_FULL_NAME);
+        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_TYPE, SENDER_DOCUMENT_TYPE);
+        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_NUMBER, SENDER_DOCUMENT_NUMBER);
+        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_ISSUED_BY, SENDER_DOCUMENT_ISSUED_BY);
+        senderData.put(SourceOfFunds.SenderDataKey.PHONE, SENDER_PHONE);
+        senderData.put(SourceOfFunds.SenderDataKey.PAYMENT_PURPOSE, SENDER_PAYMENT_PURPOSE);
+        return senderData;
+    }
+
     public static User buildAdmin() {
         return User.builder()
                 .id(ADMIN_ID)
@@ -22,7 +53,7 @@ public class ObjectBuilder {
                 .surname(ADMIN_SURNAME)
                 .dateOfBirth(ADMIN_BIRTHDATE)
                 .password(ADMIN_RAW_PASSWORD)
-                .roleSet(Set.of(new Role(ROLE_ADMIN_ID, RoleEnum.ROLE_ADMIN)))
+                .roleSet(Set.of(buildAdminRole()))
                 .build();
     }
 
@@ -34,7 +65,7 @@ public class ObjectBuilder {
                 .surname(REGULAR_SURNAME)
                 .dateOfBirth(REGULAR_BIRTHDATE)
                 .password(REGULAR_RAW_PASSWORD)
-                .roleSet(Set.of(new Role(ROLE_USER_ID, RoleEnum.ROLE_USER)))
+                .roleSet(Set.of(buildUserRole()))
                 .build();
     }
 
@@ -48,7 +79,7 @@ public class ObjectBuilder {
 
     public static Card buildAdminVisaCard() {
         return Card.builder()
-                .id(VISA_CARD_ID)
+                .id(VISA_CARD_ID_OWNER_ADMIN)
                 .type(CardType.VISA)
                 .number(VISA_CARD_NUMBER_ENCODED)
                 .expiration(VISA_EXPIRATION)
@@ -62,7 +93,7 @@ public class ObjectBuilder {
 
     public static Card buildAdminMastercardCard() {
         return Card.builder()
-                .id(MASTERCARD_CARD_ID)
+                .id(MASTERCARD_CARD_ID_OWNER_ADMIN)
                 .type(CardType.MASTERCARD)
                 .number(MASTERCARD_CARD_NUMBER_ENCODED)
                 .expiration(MASTERCARD_EXPIRATION)
@@ -76,7 +107,7 @@ public class ObjectBuilder {
 
     public static Card buildUserAmexCard() {
         return Card.builder()
-                .id(AMEX_CARD_ID)
+                .id(AMEX_CARD_ID_OWNER_REGULAR)
                 .type(CardType.AMERICAN_EXPRESS)
                 .number(AMEX_CARD_NUMBER_ENCODED)
                 .expiration(AMEX_EXPIRATION)
@@ -90,7 +121,7 @@ public class ObjectBuilder {
 
     public static Card buildUserBankSpecificCard() {
         return Card.builder()
-                .id(BANK_SPECIFIC_CARD_ID)
+                .id(BANK_SPECIFIC_CARD_ID_OWNER_REGULAR)
                 .type(CardType.BANK_SPECIFIC)
                 .number(BANK_SPECIFIC_CARD_NUMBER_ENCODED)
                 .expiration(BANK_SPECIFIC_EXPIRATION)
@@ -127,14 +158,14 @@ public class ObjectBuilder {
 
     public static BackupAccount buildAdminBackupAccount() {
         Map<SourceOfFunds.SenderDataKey, String> senderData = new EnumMap<>(SourceOfFunds.SenderDataKey.class);
-        senderData.put(SourceOfFunds.SenderDataKey.ORGANIZATION_INN, "1234567890");
-        senderData.put(SourceOfFunds.SenderDataKey.FULL_NAME, "Company Ltd");
-        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_TYPE, "Certificate");
-        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_NUMBER, "123");
-        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_ISSUED_BY, "State");
-        senderData.put(SourceOfFunds.SenderDataKey.ADDRESS, "Moscow");
-        senderData.put(SourceOfFunds.SenderDataKey.PHONE, "1234567");
-        senderData.put(SourceOfFunds.SenderDataKey.PAYMENT_PURPOSE, "Charity");
+        senderData.put(SourceOfFunds.SenderDataKey.ORGANIZATION_INN, ORG_INN);
+        senderData.put(SourceOfFunds.SenderDataKey.FULL_NAME, ORG_NAME);
+        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_TYPE, ORG_DOCUMENT_TYPE);
+        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_NUMBER, ORG_DOCUMENT_NUMBER);
+        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_ISSUED_BY, ORG_DOCUMENT_ISSUED_BY);
+        senderData.put(SourceOfFunds.SenderDataKey.ADDRESS, ORG_ADDRESS);
+        senderData.put(SourceOfFunds.SenderDataKey.PHONE, ORG_PHONE);
+        senderData.put(SourceOfFunds.SenderDataKey.PAYMENT_PURPOSE, ORG_PURPOSE);
 
         return BackupAccount.builder()
                 .id(BACKUP_ACCOUNT_1_ID)
@@ -147,12 +178,12 @@ public class ObjectBuilder {
 
     public static BackupAccount buildUserBackupAccount() {
         Map<SourceOfFunds.SenderDataKey, String> senderData = new EnumMap<>(SourceOfFunds.SenderDataKey.class);
-        senderData.put(SourceOfFunds.SenderDataKey.FULL_NAME, "Ivan Ivanov");
-        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_TYPE, "Passport");
-        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_NUMBER, "123456");
-        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_ISSUED_BY, "Police");
-        senderData.put(SourceOfFunds.SenderDataKey.PHONE, "7654321");
-        senderData.put(SourceOfFunds.SenderDataKey.PAYMENT_PURPOSE, "Gift");
+        senderData.put(SourceOfFunds.SenderDataKey.FULL_NAME, INDIVIDUAL_NAME);
+        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_TYPE, INDIVIDUAL_DOCUMENT_TYPE);
+        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_NUMBER, INDIVIDUAL_DOCUMENT_NUMBER);
+        senderData.put(SourceOfFunds.SenderDataKey.DOCUMENT_ISSUED_BY, INDIVIDUAL_DOCUMENT_ISSUED_BY);
+        senderData.put(SourceOfFunds.SenderDataKey.PHONE, INDIVIDUAL_PHONE);
+        senderData.put(SourceOfFunds.SenderDataKey.PAYMENT_PURPOSE, INDIVIDUAL_PURPOSE);
 
         return BackupAccount.builder()
                 .id(BACKUP_ACCOUNT_2_ID)
@@ -175,8 +206,31 @@ public class ObjectBuilder {
         return new Role(ROLE_ADMIN_ID, RoleEnum.ROLE_ADMIN);
     }
 
-
     public static Role buildRegularUserRole() {
         return new Role(ROLE_USER_ID, RoleEnum.ROLE_USER);
     }
+
+    public static User buildCustomUser(String username, String password, String name, String surname) {
+        return User.builder()
+                .username(username)
+                .password(password)
+                .name(name)
+                .surname(surname)
+                .roleSet(Set.of(buildUserRole(), buildAdminRole()))
+                .dateOfBirth(LocalDate.now().minusYears(30))
+                .build();
+    }
+
+    public static Card buildCustomCard(User owner, CardType type, String number, int expYears, int expMonths) {
+        return Card.builder()
+                .owner(owner)
+                .type(type)
+                .number(number)
+                .expiration(LocalDate.now().plusYears(expYears).plusMonths(expMonths))
+                .status(CardStatus.ACTIVE)
+                .balance(BigDecimal.ZERO)
+                .isDeleted(false)
+                .build();
+    }
+
 }

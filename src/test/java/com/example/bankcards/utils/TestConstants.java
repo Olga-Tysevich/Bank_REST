@@ -6,9 +6,14 @@ import java.time.LocalDateTime;
 
 public interface TestConstants {
     String SCHEME_SOURCE_PATH = "schemas/";
-    String BASE_URL = "http://localhost:%s/v1/api";
+    String BASE_URL = "http://localhost:%s";
     int DEFAULT_APP_PORT = 8080;
     long DEFAULT_TIMEOUT = 1500L;
+    long DEFAULT_PAGE = 0;
+    String COUNT_PER_PAGE_PARAM = "countPerPage";
+    long DEFAULT_COUNT_PER_PAGE = 5;
+    String PAGE_PARAM = "pageNum";
+    String USER_ID_PARAM = "id";
 
     // Пользователи
     String ADMIN_USERNAME = "admin@bank.com";
@@ -75,10 +80,10 @@ public interface TestConstants {
     Long ADMIN_ID = 1L;
     Long REGULAR_USER_ID = 2L;
 
-    Long VISA_CARD_ID = 1L;
-    Long MASTERCARD_CARD_ID = 2L;
-    Long AMEX_CARD_ID = 3L;
-    Long BANK_SPECIFIC_CARD_ID = 4L;
+    Long VISA_CARD_ID_OWNER_ADMIN = 1L;
+    Long MASTERCARD_CARD_ID_OWNER_ADMIN = 2L;
+    Long AMEX_CARD_ID_OWNER_REGULAR = 3L;
+    Long BANK_SPECIFIC_CARD_ID_OWNER_REGULAR = 4L;
 
     Long TRANSFER_1_ID = 1L;
     Long TRANSFER_2_ID = 2L;
@@ -90,5 +95,31 @@ public interface TestConstants {
     Integer ROLE_USER_ID = 1;
     Integer ROLE_ADMIN_ID = 2;
 
-    String USER_CRED = "{\"emailOrPhone\": \"" + ADMIN_USERNAME + "\", \"password\": \"" + ADMIN_RAW_PASSWORD + "\"}";
+    String ADMIN_CRED = "{\"username\": \"" + ADMIN_USERNAME + "\", \"password\": \"" + ADMIN_RAW_PASSWORD + "\"}";
+    String RANDOM_CRED = "{\"username\": \"%s\", \"password\": \"%s\"}";
+
+
+    // Остальные данные
+    String SENDER_FULL_NAME = "John Doe";
+    String SENDER_DOCUMENT_TYPE = "Passport";
+    String SENDER_DOCUMENT_NUMBER = "123456789";
+    String SENDER_DOCUMENT_ISSUED_BY = "Gov Authority";
+    String SENDER_PHONE = "+1234567890";
+    String SENDER_PAYMENT_PURPOSE = "Payment for services";
+
+    String ORG_INN = "1234567890";
+    String ORG_NAME = "Company Ltd";
+    String ORG_DOCUMENT_TYPE = "Certificate";
+    String ORG_DOCUMENT_NUMBER = "123";
+    String ORG_DOCUMENT_ISSUED_BY = "State";
+    String ORG_ADDRESS = "Moscow";
+    String ORG_PHONE = "1234567";
+    String ORG_PURPOSE = "Charity";
+
+    String INDIVIDUAL_NAME = "Ivan Ivanov";
+    String INDIVIDUAL_DOCUMENT_TYPE = "Passport";
+    String INDIVIDUAL_DOCUMENT_NUMBER = "123456";
+    String INDIVIDUAL_DOCUMENT_ISSUED_BY = "Police";
+    String INDIVIDUAL_PHONE = "7654321";
+    String INDIVIDUAL_PURPOSE = "Gift";
 }

@@ -49,9 +49,9 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
 
     @Test
     public void testTransfer_successfully() {
-        Card fromCard = cardRepository.findById(1L).orElseThrow();
+        Card fromCard = cardRepository.findById(VISA_CARD_ID_OWNER_ADMIN).orElseThrow();
 
-        Card toCard = cardRepository.findById(2L).orElseThrow();
+        Card toCard = cardRepository.findById(MASTERCARD_CARD_ID_OWNER_ADMIN).orElseThrow();
 
         fromCard.releaseFromHold(fromCard.getHold());
         fromCard.setBalance(new BigDecimal("200.00"));
@@ -79,8 +79,8 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
 
         transferQueueProcessor.processQueue();
 
-        fromCard = cardRepository.findById(1L).orElseThrow();
-        toCard = cardRepository.findById(2L).orElseThrow();
+        fromCard = cardRepository.findById(VISA_CARD_ID_OWNER_ADMIN).orElseThrow();
+        toCard = cardRepository.findById(MASTERCARD_CARD_ID_OWNER_ADMIN).orElseThrow();
         Transfer transferResult = transferRepository.findById(transferId).orElseThrow();
 
         assertThat(fromCard.getBalance())
@@ -105,8 +105,8 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
     @Test
     public void testCreateTransfer_UnauthorizedUser_ThrowsUnauthorizedException() {
         MoneyTransferReqDTO req = new MoneyTransferReqDTO();
-        req.setFromCardId(1L);
-        req.setToCardId(2L);
+        req.setFromCardId(VISA_CARD_ID_OWNER_ADMIN);
+        req.setToCardId(MASTERCARD_CARD_ID_OWNER_ADMIN);
         req.setAmount(BigDecimal.TEN);
 
         assertThatThrownBy(() -> transferService.createTransferRequest(req))
@@ -118,8 +118,8 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
         super.setAuthentication(REGULAR_USERNAME, REGULAR_RAW_PASSWORD);
 
         MoneyTransferReqDTO req = new MoneyTransferReqDTO();
-        req.setFromCardId(1L);
-        req.setToCardId(2L);
+        req.setFromCardId(VISA_CARD_ID_OWNER_ADMIN);
+        req.setToCardId(MASTERCARD_CARD_ID_OWNER_ADMIN);
         req.setAmount(BigDecimal.TEN);
 
         assertThatThrownBy(() -> transferService.createTransferRequest(req))
@@ -131,16 +131,16 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
     public void testCreateTransfer_InsufficientBalance_ThrowsProhibitedException() {
         super.setAuthentication(ADMIN_USERNAME, ADMIN_RAW_PASSWORD);
 
-        Card card = cardRepository.findById(1L).get();
+        Card card = cardRepository.findById(VISA_CARD_ID_OWNER_ADMIN).get();
         card.releaseFromHold(card.getHold());
 
         card.setBalance(new BigDecimal("5.00"));
         cardRepository.save(card);
-        card = cardRepository.findById(1L).get();
+        card = cardRepository.findById(VISA_CARD_ID_OWNER_ADMIN).get();
 
         MoneyTransferReqDTO req = new MoneyTransferReqDTO();
         req.setFromCardId(card.getId());
-        req.setToCardId(2L);
+        req.setToCardId(MASTERCARD_CARD_ID_OWNER_ADMIN);
         req.setAmount(new BigDecimal("10.00"));
 
         assertThatThrownBy(() -> transferService.createTransferRequest(req))
@@ -152,7 +152,7 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
     public void testCreateTransfer_ToAccountNotFound_ThrowsProhibitedException() {
         super.setAuthentication(REGULAR_USERNAME, REGULAR_RAW_PASSWORD);
 
-        Card card = cardRepository.findById(3L).get();
+        Card card = cardRepository.findById(AMEX_CARD_ID_OWNER_REGULAR).get();
         card.setBalance(new BigDecimal("100.00"));
         cardRepository.save(card);
 
@@ -170,7 +170,7 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
     public void testCreateTransfer_SameCard_ThrowsProhibitedException() {
         super.setAuthentication(REGULAR_USERNAME, REGULAR_RAW_PASSWORD);
 
-        Card card = cardRepository.findById(3L).orElseThrow();
+        Card card = cardRepository.findById(AMEX_CARD_ID_OWNER_REGULAR).orElseThrow();
         card.setBalance(new BigDecimal("100.00"));
         cardRepository.save(card);
 
@@ -188,14 +188,14 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
     public void testCreateTransfer_SenderCardLocked_ThrowsProhibitedException() {
         super.setAuthentication(ADMIN_USERNAME, ADMIN_RAW_PASSWORD);
 
-        Card senderCard = cardRepository.findById(1L).orElseThrow();
+        Card senderCard = cardRepository.findById(VISA_CARD_ID_OWNER_ADMIN).orElseThrow();
         senderCard.setStatus(CardStatus.BLOCKED);
         senderCard.setBalance(new BigDecimal("100.00"));
         cardRepository.save(senderCard);
 
         MoneyTransferReqDTO req = new MoneyTransferReqDTO();
         req.setFromCardId(senderCard.getId());
-        req.setToCardId(2L);
+        req.setToCardId(MASTERCARD_CARD_ID_OWNER_ADMIN);
         req.setAmount(new BigDecimal("10.00"));
 
         assertThatThrownBy(() -> transferService.createTransferRequest(req))
@@ -207,11 +207,11 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
     public void testCreateTransfer_RecipientCardLocked_ThrowsProhibitedException() {
         super.setAuthentication(ADMIN_USERNAME, ADMIN_RAW_PASSWORD);
 
-        Card recipientCard = cardRepository.findById(2L).orElseThrow();
+        Card recipientCard = cardRepository.findById(MASTERCARD_CARD_ID_OWNER_ADMIN).orElseThrow();
         recipientCard.setStatus(CardStatus.EXPIRED);
         cardRepository.saveAndFlush(recipientCard);
 
-        Card senderCard = cardRepository.findById(1L).orElseThrow();
+        Card senderCard = cardRepository.findById(VISA_CARD_ID_OWNER_ADMIN).orElseThrow();
         senderCard.setBalance(new BigDecimal("100.00"));
         cardRepository.saveAndFlush(senderCard);
 
@@ -230,8 +230,8 @@ public class TransferServiceImplTransferOnlyBetweenYourCardsTrueTest extends Bas
 
         super.setAuthentication(ADMIN_USERNAME, ADMIN_RAW_PASSWORD);
 
-        Card senderCard = cardRepository.findById(1L).orElseThrow();
-        Card recipientCard = cardRepository.findById(3L).orElseThrow();
+        Card senderCard = cardRepository.findById(VISA_CARD_ID_OWNER_ADMIN).orElseThrow();
+        Card recipientCard = cardRepository.findById(AMEX_CARD_ID_OWNER_REGULAR).orElseThrow();
 
         assertThat(senderCard.getOwner().getId())
                 .isNotEqualTo(recipientCard.getOwner().getId());
