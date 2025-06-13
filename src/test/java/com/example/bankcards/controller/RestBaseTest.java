@@ -23,7 +23,7 @@ import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInC
 import static org.hamcrest.Matchers.lessThan;
 
 
-public class BaseUITest extends BaseTest {
+public class RestBaseTest extends BaseTest {
     protected static RequestSpecification requestSpecification;
 
     @LocalServerPort
