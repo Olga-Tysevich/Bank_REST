@@ -27,7 +27,7 @@ import static com.example.bankcards.utils.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CardControllerTest extends BaseUITest {
+public class CardControllerTest extends RestBaseTest {
 
     private Long testUserId;
     private User user;

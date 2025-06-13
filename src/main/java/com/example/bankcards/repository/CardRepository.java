@@ -91,7 +91,7 @@ public interface CardRepository extends JpaRepository<Card, Long>, JpaSpecificat
      * @param amount the amount to add to the balance
      * @return the number of updated rows (0 if the card is not active or not found)
      */
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE Card c SET c.balance = c.balance + :amount WHERE c.id = :cardId AND c.status = 'ACTIVE'")
     int addToBalance(@Param("cardId") Long cardId, @Param("amount") BigDecimal amount);
 

@@ -27,9 +27,9 @@
 - Проверяет доступность Redis через Lettuce
 - Предоставляет методы для установки и очистки авторизации (`SecurityContextHolder`)
 
-### `BaseUITest`
+### `RestBaseTest`
 
-Наследуется от `BaseTest`, добавляя функциональность для HTTP-запросов:
+Наследуется от `RestBaseTest`, добавляя функциональность для HTTP-запросов:
 
 - `checkStatusCodeAndBodyInPostRequest(...)`
 - `checkStatusCodeAndBodyInDeleteRequest(...)`

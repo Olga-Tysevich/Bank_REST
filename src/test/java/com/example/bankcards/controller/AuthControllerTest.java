@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import static com.example.bankcards.utils.TestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class AuthControllerTest extends BaseUITest {
+public class AuthControllerTest extends RestBaseTest {
 
     @Test
     void shouldReturnValidLoginResponse_whenCredentialsAreCorrect() {
